@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+.httr-oauth
+.Rprofile
+data/*.rds
+images/
+*.html
+*.png
+*.rds
+data/*rds
