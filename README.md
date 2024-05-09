@@ -2,7 +2,7 @@
 
 Analyzing attendance figures and stadium capacity in top Euro leagues and MLS.
 
-Match attendance via [`worldfootballr`package](https://github.com/JaseZiv/worldfootballR).
+Match attendance from [FBRef](https://fbref.com/en/) via [`worldfootballr`](https://github.com/JaseZiv/worldfootballR) package.
 
 Stadium information from wikipedia
 
