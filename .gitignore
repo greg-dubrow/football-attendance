@@ -11,3 +11,5 @@ images/
 *.png
 *.rds
 data/*rds
+*.qmd
+testpost_files/
