@@ -13,3 +13,4 @@ images/
 data/*rds
 *.qmd
 testpost_files/
+*.xlsx

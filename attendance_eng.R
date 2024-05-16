@@ -3,11 +3,9 @@
 library(tidyverse)
 library(tidylog)
 library(janitor)
-library(rvest)
-library(httr)
-library(polite)
 library(ggtext)
 library(ggrepel)
+
 source("~/Data/r/basic functions.R")
 
 # load attendance data
@@ -22,9 +20,6 @@ eng_match_2023 %>%
 	summarise(min_date = min(Date),
 						max_date = max(Date))
 
-
-
-
 glimpse(eng_match_2023)
 
 eng_match_2023 %>%
@@ -36,40 +31,17 @@ eng_match_2023 %>%
 
 
 ## england stadium info via wikipedia (last edit May 2 2024)
-eng_url <- "https://en.wikipedia.org/wiki/List_of_football_stadiums_in_England"
+# creates eng_stad_df
 
-eng_url_bow <- polite::bow(eng_url)
-eng_url_bow
+# source("stadium_eng.R")
 
-eng_stad_html <-
-	polite::scrape(eng_url_bow) %>%  # scrape web page
-	rvest::html_nodes("table.wikitable.sortable") %>% # pull out specific table
-	rvest::html_table(fill = TRUE)
-
-eng_stad_df <-
-	eng_stad_html[[1]] %>%
-	clean_names() %>%
-	mutate(stadium = str_split(stadium, "\\[", simplify=T)[,1]) %>%
-	mutate(capacity = str_split(capacity, "\\[", simplify=T)[,1]) %>%
-	mutate(capacity = as.numeric(gsub(",", "", as.character(capacity)))) %>%
-	mutate(stadium = ifelse(team == "Manchester City", "Etihad Stadium", stadium)) %>%
-	mutate(stadium = ifelse(stadium == "Falmer Stadium", "The American Express Community Stadium", stadium)) %>%
-	mutate(stadium = ifelse(stadium == "Dean Court", "Vitality Stadium", stadium)) %>%
-	select(stadium, town_city:league) %>%
-	# add welsh clubs in English leagues
-	add_row(tibble_row(stadium = "Racecourse Ground", town_city = "Wrexham, Wales", capacity = 13060,
-										 team = "Wrexham AFC", league = "EFL Championship")) %>%
-	add_row(tibble_row(stadium = "Cardiff City Stadium", town_city = "Cardiff, Wales", capacity = 33316,
-										 team = "Cardiff City FC", league = "EFL Championship")) %>%
-	add_row(tibble_row(stadium = "Swansea.com Stadium", town_city = "Swansea, Wales", capacity = 21088,
-										 team = "Swansea City AFC", league = "EFL Championship"))
-
-glimpse(eng_stad_df)
+eng_stad_df <- readRDS("~/Data/r/football data projects/data/stadiums_england.rds") %>%
 
 eng_stad_df %>%
 	count(league)
 
-# EPL teams 2022-23
+## EPL Attendance & capacity 2022-33
+# staddium info for EPL teams 2022-23
 eng_stad_epl23 <-
 	eng_stad_df %>%
 	filter(stadium %in%  c("Anfield", "Brentford Community Stadium", "Craven Cottage", "Elland Road",
@@ -81,25 +53,6 @@ eng_stad_epl23 <-
 													"Super League")) %>%
 	select(-league)
 
-# EFL Championship teams 2022-23
-eng_stad_eflch23 <-
-	eng_stad_df %>%
-	filter( stadium %in% c("St Andrew's", "Ewood Park", "Bloomfield Road", "Ashton Gate Stadium",
-												 "Turf Moor", "Cardiff City Stadium", "Coventry Building Society Arena",
-												 "Kirklees Stadium", "MKM Stadium", "Kenilworth Road", "Riverside Stadium",
-												 "The Den", "Carrow Road", "Deepdale", "Loftus Road",
-												 "Madejski Stadium", "New York Stadium", "Bramall Lane", "bet365 Stadium",
-												 "Stadium of Light", "Swansea.com Stadium", "Vicarage Road", "The Hawthorns", "DW Stadium")) %>%
-	filter(league %notin% c("Premiership Rugby", "Women's Super League", "Women's Championship",
-													"Super League")) %>%
-	select(-league) %>%
-	mutate(stadium = ifelse(stadium == "Kirklees Stadium", "The John Smith's Stadium", stadium)) %>%
-	mutate(stadium = ifelse(stadium == "Madejski Stadium", "Select Car Leasing Stadium", stadium))
-
-
-## Attendance & capacity 2022-34
-
-#epl
 glimpse(epl_match_2023)
 
 epl_match_2023 %>%
@@ -248,8 +201,9 @@ epl_points_by_week_h <- epl_weeks %>%
 																	 HomeGoals == AwayGoals ~ 1,
 																	 TRUE ~ 0)) %>%
 	ungroup() %>%
-	select(team = match_home, match_date, week_of_season, points_week_h
-				 stadium = match_stadium, capacity, match_pct_cap)
+	select(team = match_home, match_date, week_of_season, points_week_h,
+				 stadium = match_stadium, match_attendance,
+				 capacity, match_pct_cap)
 
 
 	group_by(match_away, week_of_season) %>%
@@ -265,6 +219,23 @@ epl_points_by_week %>%
 	view()
 
 ## efl championship
+
+# stadium info for EFL Championship teams 2022-23
+eng_stad_eflch23 <-
+	eng_stad_df %>%
+	filter( stadium %in% c("St Andrew's", "Ewood Park", "Bloomfield Road", "Ashton Gate Stadium",
+												 "Turf Moor", "Cardiff City Stadium", "Coventry Building Society Arena",
+												 "Kirklees Stadium", "MKM Stadium", "Kenilworth Road", "Riverside Stadium",
+												 "The Den", "Carrow Road", "Deepdale", "Loftus Road",
+												 "Madejski Stadium", "New York Stadium", "Bramall Lane", "bet365 Stadium",
+												 "Stadium of Light", "Swansea.com Stadium", "Vicarage Road", "The Hawthorns", "DW Stadium")) %>%
+	filter(league %notin% c("Premiership Rugby", "Women's Super League", "Women's Championship",
+													"Super League")) %>%
+	select(-league) %>%
+	mutate(stadium = ifelse(stadium == "Kirklees Stadium", "The John Smith's Stadium", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Madejski Stadium", "Select Car Leasing Stadium", stadium))
+
+
 glimpse(efl_ch_match_2023)
 
 efl_ch_match_2023 %>%
