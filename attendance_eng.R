@@ -35,7 +35,7 @@ eng_match_2023 %>%
 
 # source("stadium_eng.R")
 
-eng_stad_df <- readRDS("~/Data/r/football data projects/data/stadiums_england.rds") %>%
+eng_stad_df <- readRDS("~/Data/r/football data projects/data/stadiums_eng.rds")
 
 eng_stad_df %>%
 	count(league)
@@ -61,7 +61,7 @@ epl_match_2023 %>%
 	view()
 
 # join match data to stadium info
-epl_att23 <- eng_match_2023 %>%
+epl_att_23 <- eng_match_2023 %>%
 	filter(Competition_Name == "Premier League") %>%
 	select(league = Competition_Name, season = Season_End_Year, round = Round,
 				 match_date = Date, match_day = Day, match_time = Time,
@@ -81,10 +81,10 @@ epl_att23 <- eng_match_2023 %>%
 	mutate(capacity = ifelse(match_stadium == "Anfield", 54000, capacity)) %>%
 	mutate(match_pct_cap = match_attendance / capacity)
 
-glimpse(epl_att23)
+glimpse(epl_att_23)
 
 # top line stats for league
-epl_att23 %>%
+epl_att_23 %>%
 	summarise(matches_tot = n(),
 						attendance_tot = sum(match_attendance),
 						attend_avg = mean(match_attendance),
@@ -96,45 +96,10 @@ epl_att23 %>%
 						cap_med = median(capacity)) %>%
 	mutate(capacity_pct_season = attendance_tot / capacity_tot)
 
-## df for plotting, with topline league and team figures
-# different groupings in case teams play at multiple venues.
-# only keep capacity_pct_team if multiple venues
-epl_att_23_sum <- epl_att23 %>%
-	# team figures
-	group_by(match_home, match_stadium) %>%
-	mutate(attend_avg_team = round(mean(match_attendance), 0)) %>%
-	mutate(attend_min_team = min(match_attendance)) %>%
-	mutate(attend_max_team = max(match_attendance)) %>%
-	mutate(attend_tot_team = sum(match_attendance)) %>%
-	mutate(capacity_tot_team = sum(capacity)) %>%
-	mutate(capacity_pct_team = attend_tot_team / capacity_tot_team) %>%
-	ungroup() %>%
-	# league figures
-	mutate(attend_avg_league = round(mean(match_attendance), 0)) %>%
-	mutate(attend_med_league = round(median(match_attendance), 0)) %>%
-	mutate(attend_min_league = min(match_attendance)) %>%
-	mutate(attend_max_league = max(match_attendance)) %>%
-	mutate(capacity_avg_league = round(mean(capacity), 0)) %>%
-	mutate(capacity_med_league = round(median(capacity), 0)) %>%
-	mutate(capacity_min_league = min(capacity)) %>%
-	mutate(capacity_max_league = max(capacity)) %>%
-	mutate(attend_tot_league = sum(match_attendance)) %>%
-	mutate(capacity_tot_league = sum(capacity)) %>%
-	mutate(capacity_pct_league = attend_tot_league / capacity_tot_league) %>%
-	# group_by(match_home) %>%
-	# mutate(capacity_tot2 = sum(capacity)) %>%
-	# mutate(attendance_tot2 = sum(match_attendance)) %>%
-	# mutate(capacity_pct_team = attendance_tot2 / capacity_tot2) %>%
-	# ungroup() %>%
-	select(team_name = match_home, stadium_name = match_stadium, stadium_capacity = capacity,
-				 attend_avg_team, attend_min_team, attend_max_team,
-				 attend_tot_team, capacity_tot_team, capacity_pct_team,
-				 attend_avg_league, attend_med_league, attend_min_league, attend_max_league,
-				 capacity_avg_league, capacity_med_league, capacity_min_league, capacity_max_league,
-				 attend_tot_league, capacity_tot_league, capacity_pct_league) %>%
-	#, capacity_pct_team) %>%
-	distinct(team_name, stadium_name, .keep_all = T)
 
+source("attend_function.R")
+
+attend_sum(epl_att_23, "epl_att_23")
 glimpse(epl_att_23_sum)
 
 epl_att_23_sum %>%
@@ -160,9 +125,9 @@ epl_att_23_sum %>%
 					 label = "<span style='color: #A74E79;'>Average league attendance -></span>",
 					 x = 32000, y = "Manchester United") +
 	scale_x_continuous(limits = c(10000, 75000), breaks = scales::pretty_breaks(6)) +
+	ggtitle(paste0(epl_att_23_sum$league, " <span style='color: #4E79A7;'>Stadium capacity</span> and
+			  <span style='color: #A74E79;'>Average attendance</span> by club, 2022-23 season.")) +
 	labs(x = "", y = "",
-			 title = "<span style='color: #4E79A7;'>Stadium capacity</span> and
-			 <span style='color: #A74E79;'>Average attendance</span> by club, 2022-23 season.",
 			 subtitle = "If blue dot right of red dot, average attendance below stadium capacity. Sorted by stadium capacity.",
 			 caption = "*Data from FBRef using worldfootballr package*") +
 	theme_minimal() +
@@ -171,6 +136,8 @@ epl_att_23_sum %>%
 				plot.subtitle = element_markdown(),
 				plot.caption = element_markdown(),
 				axis.text.y = element_text(size = 11))
+
+
 
 epl_att_23_sum %>%
 	ggplot(aes(stadium_capacity, capacity_pct_team)) +
@@ -305,3 +272,43 @@ efl_ch_att23 %>%
 				 #, capacity_pct_team) %>%
 	distinct(team_name, stadium_name, .keep_all = T) %>%
 	view()
+
+
+
+
+## redundant code
+epl_att_23_sum <- epl_att23 %>%
+	# team figures
+	group_by(match_home, match_stadium) %>%
+	mutate(attend_avg_team = round(mean(match_attendance), 0)) %>%
+	mutate(attend_min_team = min(match_attendance)) %>%
+	mutate(attend_max_team = max(match_attendance)) %>%
+	mutate(attend_tot_team = sum(match_attendance)) %>%
+	mutate(capacity_tot_team = sum(capacity)) %>%
+	mutate(capacity_pct_team = attend_tot_team / capacity_tot_team) %>%
+	ungroup() %>%
+	# league figures
+	mutate(attend_avg_league = round(mean(match_attendance), 0)) %>%
+	mutate(attend_med_league = round(median(match_attendance), 0)) %>%
+	mutate(attend_min_league = min(match_attendance)) %>%
+	mutate(attend_max_league = max(match_attendance)) %>%
+	mutate(capacity_avg_league = round(mean(capacity), 0)) %>%
+	mutate(capacity_med_league = round(median(capacity), 0)) %>%
+	mutate(capacity_min_league = min(capacity)) %>%
+	mutate(capacity_max_league = max(capacity)) %>%
+	mutate(attend_tot_league = sum(match_attendance)) %>%
+	mutate(capacity_tot_league = sum(capacity)) %>%
+	mutate(capacity_pct_league = attend_tot_league / capacity_tot_league) %>%
+	# group_by(match_home) %>%
+	# mutate(capacity_tot2 = sum(capacity)) %>%
+	# mutate(attendance_tot2 = sum(match_attendance)) %>%
+	# mutate(capacity_pct_team = attendance_tot2 / capacity_tot2) %>%
+	# ungroup() %>%
+	select(team_name = match_home, stadium_name = match_stadium, stadium_capacity = capacity,
+				 attend_avg_team, attend_min_team, attend_max_team,
+				 attend_tot_team, capacity_tot_team, capacity_pct_team,
+				 attend_avg_league, attend_med_league, attend_min_league, attend_max_league,
+				 capacity_avg_league, capacity_med_league, capacity_min_league, capacity_max_league,
+				 attend_tot_league, capacity_tot_league, capacity_pct_league) %>%
+	#, capacity_pct_team) %>%
+	distinct(team_name, stadium_name, .keep_all = T)
