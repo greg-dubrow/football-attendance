@@ -1,5 +1,4 @@
 # england attendance figures...epl and efl leagues
-
 library(tidyverse)
 library(tidylog)
 library(janitor)
@@ -7,6 +6,9 @@ library(ggtext)
 library(ggrepel)
 
 source("~/Data/r/basic functions.R")
+
+# functions for summary df and plots
+source("attend_functions.R")
 
 # load attendance data
 eng_match_2023 <- readRDS("~/Data/r/football data projects/data/euro_mls_match_2023.rds") %>%
@@ -42,7 +44,7 @@ eng_stad_df %>%
 
 ## EPL Attendance & capacity 2022-33
 # staddium info for EPL teams 2022-23
-eng_stad_epl23 <-
+eng_stad_epl_23 <-
 	eng_stad_df %>%
 	filter(stadium %in%  c("Anfield", "Brentford Community Stadium", "Craven Cottage", "Elland Road",
 												 "Emirates Stadium", "Etihad Stadium","Goodison Park", "King Power Stadium", "London Stadium",
@@ -53,12 +55,8 @@ eng_stad_epl23 <-
 													"Super League")) %>%
 	select(-league)
 
-glimpse(epl_match_2023)
+glimpse(eng_stad_epl_23)
 
-epl_match_2023 %>%
-	count(Home) %>%
-	select(-n) %>%
-	view()
 
 # join match data to stadium info
 epl_att_23 <- eng_match_2023 %>%
@@ -77,7 +75,7 @@ epl_att_23 <- eng_match_2023 %>%
 	mutate(match_away = ifelse(match_away == "Nott'ham Forest", "Nottingham Forest", match_away)) %>%
 	mutate(match_home = str_replace(match_home, "Utd", "United")) %>%
 	mutate(match_away = str_replace(match_away, "Utd", "United")) %>%
-	left_join(eng_stad_epl23, by = c("match_stadium" = "stadium")) %>%
+	left_join(eng_stad_epl_23, by = c("match_stadium" = "stadium")) %>%
 	mutate(capacity = ifelse(match_stadium == "Anfield", 54000, capacity)) %>%
 	mutate(match_pct_cap = match_attendance / capacity)
 
@@ -97,45 +95,22 @@ epl_att_23 %>%
 	mutate(capacity_pct_season = attendance_tot / capacity_tot)
 
 
-source("attend_function.R")
-
+# create plotting df. 1st argument is df to run function on, 2nd is for name of df with _sum suffix
 attend_sum(epl_att_23, "epl_att_23")
 glimpse(epl_att_23_sum)
 
-epl_att_23_sum %>%
-	ggplot(aes(stadium_capacity, reorder(team_name, stadium_capacity))) +
-	geom_point(aes(x=stadium_capacity, y= reorder(team_name, stadium_capacity)), color="#4E79A7", size=3 ) +
-	geom_point(aes(x=attend_avg_team, y= reorder(team_name, stadium_capacity)), color="#A74E79", size=3 ) +
-	#	geom_bar(stat = "identity") +
-	geom_vline(xintercept = epl_att_23_sum$capacity_avg_league, color = "#4E79A7") +
-	geom_vline(xintercept = epl_att_23_sum$attend_avg_league, color = "#A74E79") +
-	geom_text(data = epl_att_23_sum %>% filter(stadium_capacity < 70000),
-						aes(x = stadium_capacity + 1100, y = team_name,
-								label = paste0("Pct capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = -.02)) +
-	geom_text(data = epl_att_23_sum %>% filter(stadium_capacity > 70000),
-						aes(x = stadium_capacity - 10000, y = team_name,
-								label = paste0("Pct capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .04)) +
-#	geom_text(aes(x = 30000, y = "Manchester United", label = "test")) +
-	annotate(geom = "richtext",
-					 label = "<span style='color: #4E79A7;'><- Average league capacity</span>",
-					 x = 48000, y = "Manchester United") +
-	annotate(geom = "richtext",
-					 label = "<span style='color: #A74E79;'>Average league attendance -></span>",
-					 x = 32000, y = "Manchester United") +
-	scale_x_continuous(limits = c(10000, 75000), breaks = scales::pretty_breaks(6)) +
-	ggtitle(paste0(epl_att_23_sum$league, " <span style='color: #4E79A7;'>Stadium capacity</span> and
-			  <span style='color: #A74E79;'>Average attendance</span> by club, 2022-23 season.")) +
-	labs(x = "", y = "",
-			 subtitle = "If blue dot right of red dot, average attendance below stadium capacity. Sorted by stadium capacity.",
-			 caption = "*Data from FBRef using worldfootballr package*") +
-	theme_minimal() +
-	theme(panel.grid = element_blank(),
-				plot.title = element_markdown(),
-				plot.subtitle = element_markdown(),
-				plot.caption = element_markdown(),
-				axis.text.y = element_text(size = 11))
+# plot using plotting df
+# run function
+epl_attplot <- attend_plot1(epl_att_23_sum)
+epl_attplot
+
+# add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
+epl_attplot +
+	labs(
+		title = glue::glue("<b>Premier League <span style='color: #4E79A7;'>Stadium capacity</span> and
+	 		  <span style='color: #A74E79;'>Average attendance</span> by club, 2022-23 season.</b><br>
+				All Premier League clubs were over 90% capacity, and all but two, Bournemouth and Southhampton,
+									 filled more than 95% of seats."))
 
 
 
@@ -312,3 +287,39 @@ epl_att_23_sum <- epl_att23 %>%
 				 attend_tot_league, capacity_tot_league, capacity_pct_league) %>%
 	#, capacity_pct_team) %>%
 	distinct(team_name, stadium_name, .keep_all = T)
+
+epl_att_23_sum %>%
+	ggplot(aes(stadium_capacity, reorder(team_name, stadium_capacity))) +
+	geom_point(aes(x=stadium_capacity, y= reorder(team_name, stadium_capacity)), color="#4E79A7", size=3 ) +
+	geom_point(aes(x=attend_avg_team, y= reorder(team_name, stadium_capacity)), color="#A74E79", size=3 ) +
+	#	geom_bar(stat = "identity") +
+	geom_vline(xintercept = epl_att_23_sum$capacity_avg_league, color = "#4E79A7") +
+	geom_vline(xintercept = epl_att_23_sum$attend_avg_league, color = "#A74E79") +
+	geom_text(data = epl_att_23_sum %>% filter(stadium_capacity < 70000),
+						aes(x = stadium_capacity + 1100, y = team_name,
+								label = paste0("Pct capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
+								hjust = -.02)) +
+	geom_text(data = epl_att_23_sum %>% filter(stadium_capacity > 70000),
+						aes(x = stadium_capacity - 10000, y = team_name,
+								label = paste0("Pct capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
+								hjust = .04)) +
+	#	geom_text(aes(x = 30000, y = "Manchester United", label = "test")) +
+	annotate(geom = "richtext",
+					 label = "<span style='color: #4E79A7;'><- Average league capacity</span>",
+					 x = 48000, y = "Manchester United") +
+	annotate(geom = "richtext",
+					 label = "<span style='color: #A74E79;'>Average league attendance -></span>",
+					 x = 32000, y = "Manchester United") +
+	scale_x_continuous(limits = c(10000, 75000), breaks = scales::pretty_breaks(6)) +
+	# ggtitle(paste0(epl_att_23_sum$league, "<span style='color: #4E79A7;'>Stadium capacity</span> and
+	# 		  <span style='color: #A74E79;'>Average attendance</span> by club, 2022-23 season.")) +
+	labs(x = "", y = "", title = "<span style='color: #4E79A7;'>Stadium capacity</span> and
+	 		  <span style='color: #A74E79;'>Average attendance</span> by club, 2022-23 season.",
+			 subtitle = "If blue dot right of red dot, average attendance below stadium capacity. Sorted by stadium capacity.",
+			 caption = "*Data from FBRef using worldfootballr package*") +
+	theme_minimal() +
+	theme(panel.grid = element_blank(),
+				plot.title = element_markdown(),
+				plot.subtitle = element_markdown(),
+				plot.caption = element_markdown(),
+				axis.text.y = element_text(size = 11))

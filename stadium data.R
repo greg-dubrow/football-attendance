@@ -25,6 +25,7 @@ eng_stad_df <-
 	mutate(stadium = str_split(stadium, "\\[", simplify=T)[,1]) %>%
 	mutate(capacity = str_split(capacity, "\\[", simplify=T)[,1]) %>%
 	mutate(capacity = as.numeric(gsub(",", "", as.character(capacity)))) %>%
+	mutate(capacity = ifelse(stadium == "Craven Cottage", 24500, capacity)) %>%
 	mutate(stadium = ifelse(team == "Manchester City", "Etihad Stadium", stadium)) %>%
 	mutate(stadium = ifelse(stadium == "Falmer Stadium", "The American Express Community Stadium", stadium)) %>%
 	mutate(stadium = ifelse(stadium == "Dean Court", "Vitality Stadium", stadium)) %>%
@@ -250,7 +251,24 @@ spa_stad_df <- spa_stad_df1 %>%
 	# 2nd stadium tables
 	rbind(spa_stad_df2) %>%
 	filter(!grepl("rugby",team)) %>%
-	# fix any city, ac,  or province names to align
+	# fix any stadium, city, ac,  or province names to align
+	mutate(stadium = ifelse(stadium == "El Sadar", "Estadio El Sadar", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Montilivi", "Estadi Municipal de Montilivi", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "José Zorrilla", "Estadio Municipal José Zorrilla", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Nuevo Mirandilla" ,"Estadio Nuevo Mirandilla", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Mestalla", "Estadio de Mestalla", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Coliseum" ,"Estadio Coliseum", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Benito Villamarín", "Estadio Benito Villamarín", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Ramón Sánchez Pizjuán" ,"Estadio Ramón Sánchez Pizjuán", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Metropolitano" ,"Estadio Cívitas Metropolitano", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Anoeta" ,"Estadio de Anoeta", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Martínez Valero" ,"Estadio Manuel Martínez Valero", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Santiago Bernabéu" ,"Estadio Santiago Bernabéu", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Stage Front Stadium" ,"Estadi Cornellà-El Prat", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Son Moix" ,"Mallorca Son Moix Stadium", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Ciutat de València" ,"Estadio Ciudad de Valencia", stadium)) %>%
+	mutate(stadium = ifelse(stadium == 	"Balaídos", "Estadio de Balaídos", stadium)) %>%
+	mutate(stadium = ifelse(stadium == 	"La Cerámica", "Estadio de la Cerámica", stadium)) %>%
 	mutate(city = ifelse(city == "Seville", "Sevilla", city)) %>%
 	mutate(city = ifelse(city == "Valencia", "València", city)) %>%
 	mutate(city = ifelse(city == "Santa Cruz de La Palma", "Santa Cruz de la Palma", city)) %>%
