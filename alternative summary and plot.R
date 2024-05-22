@@ -146,3 +146,40 @@ title = glue::glue("<b>{unique(epl_att_23_sum$league)}, <span style='color: #4E7
 	 		  <span style='color: #A74E79;'>Average attendance</span> by club, 2022-23 season.</b><br>
 				All Premier League clubs were over 90% capacity, and all but two, Bournemouth and Southhampton,
 									 filled more than 95% of seats."))
+
+####
+#buble chart labels in bubble
+
+fra_att_23_sum %>%
+	ggplot(aes(stadium_capacity, reorder(team_name, stadium_capacity))) +
+	geom_point(aes(x=stadium_capacity, y= reorder(team_name, stadium_capacity)),
+						 color="#4E79A7", size=10, alpha = .5)+
+	geom_point(aes(x=attend_avg_team, y= reorder(team_name, stadium_capacity)),
+						 color="#A74E79", size=10, alpha = .5 ) +
+	geom_segment(aes(x=attend_avg_team , xend=stadium_capacity,
+									 y=team_name, yend=team_name), color="grey") +
+	theme_minimal() +
+	geom_text(data = fra_att_23_sum %>% filter(capacity_pct_team < .95),
+		aes(x = attend_avg_team,
+								label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+						color = "black", size = 3) +
+	geom_text(data = fra_att_23_sum %>% filter(capacity_pct_team >= .95),
+		aes(x = attend_avg_team,
+								label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+						color = "black", size = 3, hjust = 1.5) +
+	geom_text(aes(x = stadium_capacity,
+								label = format(round(stadium_capacity, digits = 0),big.mark=",",scientific=FALSE)),
+						color = "black", size = 3) +
+	scale_y_discrete(labels= function(x) highlight(x, "League Average", "black")) +
+	geom_text(data = fra_att_23_sum %>% filter(stadium_capacity < capacity_max_league & team_name != "League Average"),
+						aes(x = stadium_capacity + 1100, y = team_name,
+								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
+								hjust = -.02)) +
+	geom_text(data = fra_att_23_sum %>% filter(team_name == "League Average"),
+						aes(x = stadium_capacity + 1100, y = team_name,
+								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
+								hjust = -.02, fontface = "bold")) +
+	scale_x_continuous(limits = c(min(fra_att_23_sum$attend_avg_team),
+																max(fra_att_23_sum$stadium_capacity + 3000)),
+										 breaks = scales::pretty_breaks(6),
+										 labels = scales::comma_format(big.mark = ','))

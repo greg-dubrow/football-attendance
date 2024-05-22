@@ -49,18 +49,42 @@ attend_sum <- function(input_df, dfname = "NA") {
 }
 
 ## highlight function for plot labels
+# from https://stackoverflow.com/questions/61733297/apply-bold-font-on-specific-axis-ticks
 highlight = function(x, pat, color="black", family="") {
 	ifelse(grepl(pat, x), glue::glue("<b style='font-family:{family}; color:{color}'>{x}</b>"), x)
 }
 
+highlight2 = function(x, pat, color="black", family="") {
+	ifelse(grepl(pat, x), glue("<b style='font-family:{family}; color:{color}'>{x}</b>"), x)
+}
 
 ## plotting function. run against plotting df, output as object, then add title
 attend_plot1 <- function(plotdf) {
 	plotdf %>%
 		ggplot(aes(stadium_capacity, reorder(team_name, stadium_capacity))) +
-		geom_point(aes(x=stadium_capacity, y= reorder(team_name, stadium_capacity)), color="#4E79A7", size=3 ) +
-		geom_point(aes(x=attend_avg_team, y= reorder(team_name, stadium_capacity)), color="#A74E79", size=3 ) +
+		# points for avg attendace & capacity
+		geom_point(aes(x=stadium_capacity, y= reorder(team_name, stadium_capacity)),
+							 color="#1F78B4", size=10, alpha = .5 ) +
+		geom_point(aes(x=attend_avg_team, y= reorder(team_name, stadium_capacity)),
+							 color="#FF7F00", size=10, alpha = .5 ) +
+		# data labels for points
+		geom_text(data = plotdf %>% filter(capacity_pct_team < .95),
+							aes(x = attend_avg_team,
+									label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+							color = "black", size = 2.5) +
+		geom_text(data = plotdf %>% filter(capacity_pct_team >= .95),
+							aes(x = attend_avg_team,
+									label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+							color = "black", size = 2.5, hjust = 1.5) +
+		geom_text(aes(x = stadium_capacity,
+									label = format(round(stadium_capacity, digits = 0),big.mark=",",scientific=FALSE)),
+							color = "black", size = 2.5) +
+		# line connecting the points.
+		geom_segment(aes(x=attend_avg_team + 900 , xend=stadium_capacity - 900,
+										 y=team_name, yend=team_name), color="lightgrey") +
+		# sets league average in bold
 		scale_y_discrete(labels= function(x) highlight(x, "League Average", "black")) +
+		# text for avg season capacity
 		geom_text(data = plotdf %>% filter(stadium_capacity < capacity_max_league & team_name != "League Average"),
 							aes(x = stadium_capacity + 1100, y = team_name,
 									label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
@@ -69,13 +93,14 @@ attend_plot1 <- function(plotdf) {
 							aes(x = stadium_capacity + 1100, y = team_name,
 									label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
 									hjust = -.02, fontface = "bold")) +
-		geom_text(data = plotdf %>% filter(stadium_capacity == capacity_max_league),
-							aes(x = stadium_capacity - 10000, y = team_name,
-									label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-									hjust = .04)) +
-		scale_x_continuous(limits = c(min(plotdf$stadium_capacity - 2000),
+		scale_x_continuous(limits = c(min(plotdf$attend_avg_team),
 																	max(plotdf$stadium_capacity + 3000)),
-											 breaks = scales::pretty_breaks(6)) +
+											 breaks = scales::pretty_breaks(6),
+											 labels = scales::comma_format(big.mark = ',')) +
+		# scale_x_continuous(limits = c(min(plotdf$stadium_capacity - 2000),
+		# 															max(plotdf$stadium_capacity + 3000)),
+		# 									 breaks = scales::pretty_breaks(6),
+		# 									 labels = scales::comma_format(big.mark = ',')) +
 		labs(x = "Stadium capacity", y = "",
 				 subtitle = "*The further the red dot is to the left of the blue dot, the more average attendance is less than stadium capacity. Teams sorted by stadium capacity.*",
 				 caption = "*Match attendance data from FBRef using worldfootballr package. Stadium capacity data from Wikipedia*") +
@@ -87,7 +112,12 @@ attend_plot1 <- function(plotdf) {
 						lineheight = 1.5,
 						padding = margin(5.5, 5.5, 5.5, 2),
 						margin = margin(0, 0, 5.5, 0)),
-					plot.subtitle = ggtext::element_markdown(size = 9),
+					plot.subtitle = ggtext::element_markdown(size = 10),
 					plot.caption = ggtext::element_markdown(),
+					axis.text.x = ggtext::element_markdown(size = 10),
 					axis.text.y = ggtext::element_markdown(size = 11))
 }
+
+### paired color palette
+[1] "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C"
+[7] "#FDBF6F" "#FF7F00"

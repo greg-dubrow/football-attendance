@@ -117,7 +117,16 @@ ger_stad_df2 <-
 glimpse(ger_stad_df2)
 
 ger_stad_df <- ger_stad_df1 %>%
-	rbind(ger_stad_df2)
+	rbind(ger_stad_df2) %>%
+	mutate(stadium = ifelse(stadium == "Deutsche Bank Park  (Waldstadion)", "Waldstadion", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Borussia-Park", "Stadion im Borussia-Park", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Signal Iduna Park  (Westfalenstadion)", "Westfalenstadion", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "MHPArena  (Neckarstadion)", "Neckarstadion", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "RheinEnergieStadion  (Müngersdorfer Stadion)",
+													"Müngersdorfer Stadion", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "Veltins-Arena  (Arena AufSchalke)", "Arena AufSchalke", stadium)) %>%
+	mutate(stadium = ifelse(stadium == "PreZero Arena  (Rhein-Neckar-Arena)", "Rhein-Neckar-Arena", stadium))
+
 
 saveRDS(ger_stad_df, file = "~/Data/r/football data projects/data/stadiums_ger.rds")
 
@@ -355,10 +364,70 @@ glimpse(por_stad_df)
 
 saveRDS(por_stad_df, file = "~/Data/r/football data projects/data/stadiums_por.rds")
 
+## france
+
+fra_url <- "https://en.wikipedia.org/wiki/List_of_football_stadiums_in_France"
+
+fra_url_bow <- polite::bow(fra_url)
+fra_url_bow
+
+fra_stad_html <-
+	polite::scrape(fra_url_bow) %>%  # scrape web page
+	rvest::html_nodes("table.wikitable.sortable") %>% # pull out specific table
+	rvest::html_table(fill = TRUE)
+
+fra_stad_df1 <-
+	fra_stad_html[[1]] %>%
+	clean_names() %>%
+	# keeps text up to parens
+	mutate(city = str_split(city, "\\(", simplify=T)[,1]) %>%
+	# keeps text up to [
+	mutate(capacity = str_split(capacity, "\\[", simplify=T)[,1]) %>%
+	# removes , and converts to number
+	mutate(capacity = as.numeric(gsub(",", "", as.character(capacity)))) %>%
+	mutate(opened = as.character(opened)) %>%
+	select(stadium, city, region, capacity, team = home_team_s, opened)
+
+glimpse(fra_stad_df1)
+
+fra_stad_df2 <-
+	fra_stad_html[[2]] %>%
+	clean_names() %>%
+	mutate(capacity = str_split(capacity, "\\[", simplify=T)[,1]) %>%
+	mutate(capacity = str_split(capacity, "\\(", simplify=T)[,1]) %>%
+	mutate(capacity = as.numeric(gsub(",", "", as.character(capacity)))) %>%
+	mutate(city = str_split(city, "\\(", simplify=T)[,1]) %>%
+	select(stadium, city, region, capacity, team = home_team_s, opened)
+
+glimpse(fra_stad_df2)
+
+fra_stad_df3 <-
+	fra_stad_html[[3]] %>%
+	clean_names() %>%
+	mutate(capacity = as.numeric(gsub(",", "", as.character(capacity)))) %>%
+	mutate(region = case_when(location == "Rodez" ~ "Occitania",
+														location == "Cholet" ~ "Pays de la Loire",
+														location == "Concarneau" ~ "Brittany",
+														location == "Orléans" ~ "Centre-Val de Loire")) %>%
+	mutate(opened = as.character(NA)) %>%
+	select(stadium = venue, city = location, region, capacity, team = home_team_s, opened)
+
+glimpse(fra_stad_df3)
+
+fra_stad_df <- fra_stad_df1 %>%
+	rbind(fra_stad_df2) %>%
+	rbind(fra_stad_df3) %>%
+	mutate(stadium = ifelse(stadium == "Parc Olympique Lyonnais", "Groupama Stadium", stadium)) %>%
+	mutate(team = ifelse(team == "Stade brestois 29", "Stade Brestois 29", team)) %>%
+	add_row(tibble_row(stadium = "Stade Louis II", city = "Monaco", region = "Monaco",
+										 capacity = 16360, team = "AS Monaco FC", opened = "1985"))
+
+glimpse(fra_stad_df)
+
+saveRDS(fra_stad_df, file = "~/Data/r/football data projects/data/stadiums_fra.rds")
+
 
 ## netherlands
-
-
 ned_url <- "https://en.wikipedia.org/wiki/List_of_football_stadiums_in_the_Netherlands"
 
 ned_url_bow <- polite::bow(ned_url)
