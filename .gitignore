@@ -1,0 +1,21 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+.httr-oauth
+.Rprofile
+data/*.rds
+images/
+*.html
+*.png
+*.rds
+data/*rds
+*.qmd
+testpost_files/
+*.xlsx
+*.jpg
+analysis ideas.*
+~/Data/r/football data projects/football_attendance/analysis ideas.txt
+~/Data/r/football data projects/football_attendance/analysis ideas.*
+analysis ideas
