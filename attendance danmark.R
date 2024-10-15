@@ -77,6 +77,9 @@ superligadk_att_23 %>%
 	view()
 
 superligadk_att_23 %>%
+  count(match_home)
+
+superligadk_att_23 %>%
 	mutate(round = case_when(round == "Regular season" ~ "1 - Regular season",
 													 round == "Championship round" ~ "2 - Championship round",
 													 round == "Relegation round" ~ "2 - Relegation round",
@@ -103,20 +106,42 @@ superligadk_att_23 %>%
   filter(round != "3 - European play-off match") %>%
   mutate(round2_grp = ifelse(match_home %in% c("AGF", "Brøndby", "FC Copenhagen",
   "Nordsjælland", "Randers", "Viborg"),  "Championship round", "Relegation round")) %>%
-  ungroup()
+  ungroup() %>%
+  ## add final league place
+  mutate(table_final = case_when(match_home == "FC Copenhagen" ~ 1, match_home == "Nordsjælland" ~ 2,
+                                 match_home == "AGF" ~ 3, match_home == "Viborg" ~ 4,
+                                 match_home == "Brøndby" ~ 5, match_home == "Randers" ~ 6,
+                                 match_home == "Midtjylland" ~ 7, match_home == "Odense" ~ 8,
+                                 match_home == "Silkeborg" ~ 9, match_home == "Lyngby" ~ 10,
+                                 match_home == "Horsens" ~ 11, match_home == "Aalborg" ~ 12)) %>%
+  select(match_home, table_final, round2_grp, round, attend_avg_team, round_diff)
 
 den_att_rounds %>%
 #  filter(round2_grp == "Championship round") %>%
   ggplot(aes(x = round, y = attend_avg_team, group = match_home)) +
   geom_line(aes(color = match_home, alpha = 1), size = 2) +
   geom_point(aes(color = match_home, alpha = 1), size = 4) +
-  facet_wrap(~ round2_grp, scales = "free")
-  #  Labelling as desired
-  labs(
-    title = "Voter's stated preferences for June 7 elections in Ontario",
-    subtitle = "(Mainstreet Research)",
-    caption = "https://www.mainstreetresearch.ca/gap-between-ndp-and-pcs-narrows-while-liberals-hold-steady/"
-  )
+  geom_text_repel(data = den_att_rounds %>% filter(
+    round == "1 - Regular season"),
+    aes(label = match_home),
+    hjust = 1.35, size = 3) +
+  geom_text_repel(data = den_att_rounds %>% filter(
+    round %in% c("2 - Championship round", "2 - Relegation round")),
+    aes(label = paste0("Final place ", table_final)),
+    hjust = -.35, size = 3) +
+  scale_y_continuous(labels = scales::comma_format(big.mark = ',')) +
+  facet_wrap(~ round2_grp, scales = "free") +
+  labs(x = "", y = "",
+    title = "Does something to play for (or not) impact attendance after the Superliga round split?",
+    subtitle = "Teams with chances to win the league or in jeopardy for relegation (places 11 & 12) had increased attendance,
+    <br> except for Horsens who were relegated and saw a decline for next round.") +
+  theme_minimal() +
+  theme(legend.position = "none", panel.border = element_blank(),
+        plot.subtitle = element_markdown())
+
+ggsave("images/plot_attendance_23_byrounds_superligadk.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
+
 
 attend_sum(superligadk_att_23, "superligadk_att_23")
 glimpse(superligadk_att_23_sum)
