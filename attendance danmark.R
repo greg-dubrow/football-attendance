@@ -88,6 +88,36 @@ superligadk_att_23 %>%
 	ungroup() %>%
 	view()
 
+## slopegraph
+# data for graph
+den_att_rounds <-
+superligadk_att_23 %>%
+  mutate(round = case_when(round == "Regular season" ~ "1 - Regular season",
+                           round == "Championship round" ~ "2 - Championship round",
+                           round == "Relegation round" ~ "2 - Relegation round",
+                           round == "European play-off match" ~ "3 - European play-off match")) %>%
+  arrange(match_home, round) %>%
+  group_by(match_home, round) %>%
+  summarise(attend_avg_team = round(mean(match_attendance), 0)) %>%
+  mutate(round_diff = attend_avg_team - lag(attend_avg_team, default = first(attend_avg_team))) %>%
+  filter(round != "3 - European play-off match") %>%
+  mutate(round2_grp = ifelse(match_home %in% c("AGF", "Brøndby", "FC Copenhagen",
+  "Nordsjælland", "Randers", "Viborg"),  "Championship round", "Relegation round")) %>%
+  ungroup()
+
+den_att_rounds %>%
+#  filter(round2_grp == "Championship round") %>%
+  ggplot(aes(x = round, y = attend_avg_team, group = match_home)) +
+  geom_line(aes(color = match_home, alpha = 1), size = 2) +
+  geom_point(aes(color = match_home, alpha = 1), size = 4) +
+  facet_wrap(~ round2_grp, scales = "free")
+  #  Labelling as desired
+  labs(
+    title = "Voter's stated preferences for June 7 elections in Ontario",
+    subtitle = "(Mainstreet Research)",
+    caption = "https://www.mainstreetresearch.ca/gap-between-ndp-and-pcs-narrows-while-liberals-hold-steady/"
+  )
+
 attend_sum(superligadk_att_23, "superligadk_att_23")
 glimpse(superligadk_att_23_sum)
 
