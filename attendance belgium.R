@@ -19,51 +19,56 @@ bel_match_2023 <- readRDS("~/Data/r/football data projects/data/euro_mls_match_2
 	filter(Country == "BEL") %>%
 	mutate(wk_n = as.numeric(Wk)) %>%
 	mutate(match_week = ifelse(between(wk_n, 1, 9), paste0("0", Wk), Wk)) %>%
-	select(Competition_Name:Round, match_week, Wk, Day:Referee)
-
-%>%
-	mutate(Venue = ifelse(Venue == "CASA Arena Horsens", "Nordstern Arena Horsens", Venue)) %>%
-	mutate(Venue = ifelse(Venue == "Parken", "Parken Stadium", Venue))
+  mutate(Home = ifelse(Home == "Mechelen", "KV Mechelen", Home)) %>%
+  mutate(Away = ifelse(Away == "Mechelen", "KV Mechelen", Away)) %>%
+  mutate(Home = ifelse(Home == "Union SG", "Union Saint-Gilloise", Home)) %>%
+  mutate(Away = ifelse(Away == "Union SG", "Union Saint-Gilloise", Away)) %>%
+  mutate(Venue = ifelse(Venue == "GHELAMCO-arena", "Planet Group Arena", Venue)) %>%
+  mutate(Venue = ifelse(Venue == "King Power at Den Dreef Stadion", "Den Dreef", Venue)) %>%
+  select(Competition_Name:Round, match_week, Wk, Day:Referee)
 
 glimpse(bel_match_2023)
 
-bel_match_2023 %>%
-	count(Venue)
 
 # get stadium info
-den_stad_df <- readRDS("~/Data/r/football data projects/data/stadiums_den.rds") %>%
-	mutate()
+bel_stad_df <- readRDS("~/Data/r/football data projects/data/stadiums_bel.rds") %>%
+	mutate(stadium = ifelse(stadium == "Jan Breydel Stadium", "Jan Breydelstadion", stadium)) %>%
+  mutate(stadium = ifelse(stadium == "Achter de Kazerne", "AFAS-stadion Achter de Kazerne", stadium)) %>%
+  mutate(stadium = ifelse(stadium == "Stade Joseph Marien", "Stade Joseph Mariën", stadium)) %>%
+  mutate(stadium = ifelse(stadium == "Kehrweg Stadion", "Stadion am Kehrweg", stadium))
 
-glimpse(den_stad_df)
+glimpse(bel_stad_df)
 
 den_stad_df %>%
 	count(stadium) %>%
 	view()
 
-superligadk_att_23 <- den_match_2023 %>%
+bel_att_23 <- bel_match_2023 %>%
 	select(league = Competition_Name, season = Season_End_Year, round = Round,
 				 match_date = Date, match_day = Day, match_time = Time,
 				 match_home = Home, match_away = Away,
 				 match_stadium = Venue, match_attendance = Attendance,
 				 HomeGoals, Home_xG, AwayGoals, Away_xG, Referee) %>%
-	left_join(den_stad_df, by = c("match_stadium" = "stadium")) %>%
-	mutate(city = ifelse(match_stadium == "Brøndby Stadion", "Brøndby", city)) %>%
-	mutate(team = ifelse(match_stadium == "Brøndby Stadion", "Brøndby", team)) %>%
-	mutate(capacity = ifelse(match_stadium == "Brøndby Stadion", 28100, capacity)) %>%
-	mutate(match_pct_cap = match_attendance / capacity)
+	left_join(bel_stad_df, by = c("match_stadium" = "stadium")) %>%
+  mutate(match_attendance = ifelse(match_home == "Anderlecht" & match_date == "2023-01-18",
+                                   0, match_attendance)) %>%
+  mutate(match_pct_cap = match_attendance / capacity)
 
-saveRDS(superligadk_att_23, file = "~/Data/r/football data projects/data/att_2023_superliga_dk.rds")
+bel_att_23 %>%
+  filter(match_home == "Cercle Brugge") %>%
+  view()
 
-superligadk_att_23 <- readRDS("~/Data/r/football data projects/data/att_2023_superliga_dk.rds")
+saveRDS(bel_att_23, file = "~/Data/r/football data projects/data/att_2023_bel.rds")
 
+bel_att_23 <- readRDS("~/Data/r/football data projects/data/att_2023_bel.rds")
 
-attend_sum(superligadk_att_23, "superligadk_att_23")
-glimpse(superligadk_att_23_sum)
+attend_sum(bel_att_23, "bel_att_23")
+glimpse(bel_att_23_sum)
 
 # plot using plotting df
 # run function
-superligadk_attplot <- attend_plot1(superligadk_att_23_sum)
-superligadk_attplot
+bel_attplot <- attend_plot1(bel_att_23_sum)
+bel_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 superligadk_attplot +
