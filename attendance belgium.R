@@ -71,18 +71,27 @@ bel_attplot <- attend_plot1(bel_att_23_sum)
 bel_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
-superligadk_attplot +
-	geom_text(data = superligadk_att_23_sum %>% filter(stadium_capacity == capacity_max_league),
+bel_attplot +
+	geom_text(data = bel_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "Club Brugge"),
 						aes(x = stadium_capacity - 16000, y = team_name,
 								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .04)) +
-	labs(
-		title = glue::glue("<b>Danish Superliga <span style='color: #FF7F00;'>Average attendance</span>,
+								hjust = .04, vjust = .02)) +
+  geom_text(data = bel_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "Cercle Brugge"),
+            aes(x = stadium_capacity - 16000, y = team_name,
+                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
+                hjust = .04, vjust = -.1)) +
+  labs(
+		title = glue::glue("<b>Belgian Jupiler League <span style='color: #FF7F00;'>Average attendance</span>,
 	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
-				Superliga overall at about 2/3 capacity, only Midtjylland & FC København above 70% capacity.
-											 Many clubs have standing spaces included in capacity figure."))
+				Belgian clubs overall at about 60% capacity, with many above 70% and a few between 15%-30%. <br>
+		                   Anderlecht total includes 1 match behind closed doors, thus 0 attendance."))
 
-ggsave("images/plot_attendance_23_superligadk.jpg", width = 15, height = 8,
+ggsave("images/plot_attendance_23_belgium.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)
 
+bel_scatter <- attend_scatter(bel_att_23_sum)
+bel_scatter
+
+ggsave("images/plot_att_scatter_23_belgium.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
 

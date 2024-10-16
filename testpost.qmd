@@ -498,18 +498,31 @@ What about the other European leagues, those in Belgium, Denmark, the Netherland
 
 ## Belgium
 
+![](images/plot_attendance_23_belgium.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+
+![](images/plot_att_scatter_23_belgium.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+
+
 ## Denmark
 
 ![](images/plot_attendance_23_superligadk.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Danish Superliga 2023-23 season"}
+
+![](images/plot_att_scatter_23_superligadk.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Danish Superliga 2023-23 season"}
+
 
 Because Denmark splits the club season into two parts, a regular league-wide round-robin home-away round and a round where the top and bottom halves compete seprately for seprate honors or ignominies, it is worth looking quickly to see if attendances increase or decrease depending on if a team is in the championship or relegation group.
 
 The plot below shows that teams with something real on the line, either the league title or avoiding relegation, tend to see an increase in the 2nd stage of competition relative to their attendance from the regualr season. So FC Copenhagen, going for the title, saw bigger crowds in the spring. So did Aalborg and Lyngby, battling hard to avoid relegation. Aalborg went down, Lyngby stayed up. The outlier in this respect is Horsens, who were in a tight relegation battle but saw a decrease in attendance for the 2nd stage.
 
-![](images/plot_attendance_23_byrounds_superligadk.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Danish Superliga 2023-23 season"}
+![](images/plot_attendance_23_byrounds_superligadk.jpg){fig-alt="slope graph showing average attendance and between season rounds by club in Danish Superliga 2023-23 season"}
 
 
 ## Netherlands
+
+![](images/plot_attendance_23_eredivisie.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+
+![](images/plot_att_scatter_23_eredivisie.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+
 
 ## Portugal
 

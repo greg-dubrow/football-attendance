@@ -166,4 +166,9 @@ superligadk_attplot +
 ggsave("images/plot_attendance_23_superligadk.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)
 
+den_scatter <- attend_scatter(superligadk_att_23_sum)
+den_scatter
+
+ggsave("images/plot_att_scatter_23_superligadk.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
 

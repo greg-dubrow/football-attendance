@@ -110,7 +110,7 @@ attend_plot1 <- function(plotdf) {
 		# 									 breaks = scales::pretty_breaks(6),
 		# 									 labels = scales::comma_format(big.mark = ',')) +
 		labs(x = "Stadium capacity", y = "",
-				 subtitle = "*The further the red dot is to the left of the blue dot, the more average attendance is less than stadium capacity. Teams sorted by stadium capacity.*",
+				 subtitle = "*The further the orange dot is to the left of the blue dot, the more average attendance is less than stadium capacity. Teams sorted by stadium capacity.*",
 				 caption = "*Match attendance data from FBRef using worldfootballr package. Stadium capacity data from Wikipedia*") +
 		theme_minimal() +
 		theme(panel.grid = element_blank(),
@@ -125,6 +125,21 @@ attend_plot1 <- function(plotdf) {
 					axis.text.x = ggtext::element_markdown(size = 10),
 					axis.text.y = ggtext::element_markdown(size = 11))
 }
+
+
+attend_scatter <- function(plotdf) {
+  plotdf %>%
+  ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
+  geom_point() +
+  geom_smooth() +
+  geom_text_repel(aes(label = team_name)) +
+  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+  scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
+  labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
+  theme_minimal() +
+  theme_minimal()
+}
+
 
 ### paired color palette
 # [1] "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C"
