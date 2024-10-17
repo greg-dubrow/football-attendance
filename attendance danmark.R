@@ -146,6 +146,9 @@ ggsave("images/plot_attendance_23_byrounds_superligadk.jpg", width = 15, height 
 attend_sum(superligadk_att_23, "superligadk_att_23")
 glimpse(superligadk_att_23_sum)
 
+# export to xlsx
+write_csv(superligadk_att_23_sum, file = "superligadk_att_23_sum.csv")
+
 # plot using plotting df
 # run function
 superligadk_attplot <- attend_plot1(superligadk_att_23_sum)

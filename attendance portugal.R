@@ -24,10 +24,14 @@ por_match_2023 <- readRDS("~/Data/r/football data projects/data/euro_mls_match_2
   # mutate(Home = ifelse(Home == "Go Ahead Eag", "Go Ahead Eagles", Home)) %>%
   # mutate(Away = ifelse(Away == "Go Ahead Eag", "Go Ahead Eagles", Away)) %>%
   mutate(Venue = ifelse(Venue == "Estádio da Luz (1954)", "Estádio do Sport Lisboa e Benfica", Venue)) %>%
-  # mutate(Venue = ifelse(Venue == "Hitachi Capital Mobility Stadion", "Euroborg", Venue)) %>%
-  # mutate(Venue = ifelse(Venue == "De Geusselt", "Stadion De Geusselt", Venue)) %>%
-  # mutate(Venue = ifelse(Venue == "Sparta-Stadion Het Kasteel", "Spartastadion Het Kasteel", Venue)) %>%
-  # mutate(Venue = ifelse(Venue == "Seacon Stadion De Koel", "De Koel", Venue)) %>%
+  mutate(Venue = ifelse(Home == "Casa Pia", "Estádio Municipal de Rio Maior", Venue)) %>%
+  mutate(Venue = ifelse(Home == "Chaves", "Estádio Municipal de Chaves", Venue)) %>%
+  mutate(Venue = ifelse(Venue == "Estádio dos Barreiros", "Estádio do Marítimo", Venue)) %>%
+  mutate(Venue = ifelse(Venue == "Estádio do Portimonense SC", "Estádio Municipal de Portimão", Venue)) %>%
+  mutate(Venue = ifelse(Venue == "Estádio Do Dragão", "Estádio do Dragão", Venue)) %>%
+  mutate(Venue = ifelse(Venue == "Estádio do Rio Ave Futebol Clube", "Estádio dos Arcos", Venue)) %>%
+  mutate(Venue = ifelse(Venue == "Estádio Dom Afonso Henriques", "Estádio D. Afonso Henriques", Venue)) %>%
+  mutate(Venue = ifelse(Venue == "Estádio Do Vizela", "Estádio do Futebol Clube de Vizela", Venue)) %>%
   # mutate(Attendance = ifelse(Round == "Semi-finals" & Home == "Sparta Rotterdam", 16841, Attendance)) %>%
   ## correcting attendance for Groningen matches played w/ no fans due to fan behaviour
 #  mutate(Attendance = ifelse(Home == "Groningen" & is.na(Attendance), 0, Attendance)) %>%
@@ -44,7 +48,9 @@ glimpse(por_match_2023)
 # get stadium info
 por_stad_df <- readRDS("~/Data/r/football data projects/data/stadiums_por.rds")%>%
 	mutate(stadium = ifelse(stadium == "Estádio da Luz", "Estádio do Sport Lisboa e Benfica", stadium)) %>%
-  mutate(stadium = ifelse(stadium == "Covebo Stadion – De Koel –", "De Koel", stadium))
+  mutate(stadium = ifelse(stadium == "Estádio da Mata Real", "Estádio da Capital do Móvel", stadium)) %>%
+  mutate(stadium = ifelse(stadium == "Estádio do Portimonense Sporting Clube",
+                          "Estádio Municipal de Portimão", stadium))
 
 glimpse(por_stad_df)
 
@@ -61,9 +67,9 @@ por_att_23 %>%
   filter(is.na(city)) %>%
   view()
 
-saveRDS(por_att_23, file = "~/Data/r/football data projects/data/att_2023_ned.rds")
+saveRDS(por_att_23, file = "~/Data/r/football data projects/data/att_2023_por.rds")
 
-por_att_23 <- readRDS("~/Data/r/football data projects/data/att_2023_ned.rds")
+por_att_23 <- readRDS("~/Data/r/football data projects/data/att_2023_por.rds")
 
 attend_sum(por_att_23, "por_att_23")
 glimpse(por_att_23_sum)
