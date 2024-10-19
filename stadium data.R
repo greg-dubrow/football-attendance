@@ -588,3 +588,31 @@ bel_stad_df %>%
 
 saveRDS(bel_stad_df, file = "~/Data/r/football data projects/data/stadiums_bel.rds")
 
+
+# switzerland
+
+sui_url <- "https://en.wikipedia.org/wiki/List_of_football_stadiums_in_Switzerland"
+
+sui_url_bow <- polite::bow(sui_url)
+sui_url_bow
+
+sui_stad_html <-
+  polite::scrape(sui_url_bow) %>%  # scrape web page
+  rvest::html_nodes("table.wikitable.sortable") %>% # pull out specific table
+  rvest::html_table(fill = TRUE)
+
+sui_stad_df <-
+  sui_stad_html[[1]] %>%
+  clean_names() %>%
+  mutate(capacity = str_split(capacity, "\\[", simplify=T)[,1]) %>%
+  mutate(capacity = as.numeric(gsub(",", "", as.character(capacity)))) %>%
+  select(stadium, city, capacity, team = home_team_s)
+
+glimpse(sui_stad_df)
+
+sui_stad_df %>%
+  count(city) %>%
+  view()
+
+saveRDS(sui_stad_df, file = "~/Data/r/football data projects/data/stadiums_sui.rds")
+

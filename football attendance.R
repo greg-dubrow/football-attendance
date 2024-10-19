@@ -17,19 +17,31 @@ den_match_2023 <- fb_match_results(country = "DEN", gender = "M", season_end_yea
 bel_match_2023 <- fb_match_results(country = "BEL", gender = "M", season_end_year = 2023, tier = "1st")
 ned_match_2023 <- fb_match_results(country = "NED", gender = "M", season_end_year = 2023, tier = "1st")
 por_match_2023 <- fb_match_results(country = "POR", gender = "M", season_end_year = 2023, tier = "1st")
+sui_match_2023 <- fb_match_results(country = "SUI", gender = "M", season_end_year = 2023, tier = "1st")
 swe_match_2023 <- fb_match_results(country = "SWE", gender = "M", season_end_year = 2023, tier = "1st")
+tur_match_2023 <- fb_match_results(country = "TUR", gender = "M", season_end_year = 2023, tier = "1st")
 
 efl_ch_match_2023 <- fb_match_results(country = "ENG", gender = "M", season_end_year = 2023, tier = "2nd")
 spa2_match_2023 <- fb_match_results(country = "ESP", gender = "M", season_end_year = 2023, tier = "2nd")
 
-glimpse(epl_match_2023)
+glimpse(ned_match_2023)
 
 euro_mls_match_2023 <- epl_match_2023 %>%
 	bind_rows(efl_ch_match_2023, mls_match_2023, ger_match_2023, ita_match_2023, spa_match_2023, den_match_2023,
-						fra_match_2023, bel_match_2023, ned_match_2023, por_match_2023, swe_match_2023)
+						fra_match_2023, bel_match_2023, ned_match_2023, por_match_2023, sui_match_2023,
+						swe_match_2023, tur_match_2023)
+
+glimpse(euro_mls_match_2023)
+
+sui_match_2023 <- sui_match_2023 %>%
+  mutate(Home_xG = ifelse(!is.na(Home), NA, 1)) %>%
+  mutate(Away_xG = ifelse(!is.na(Home), NA, 1)) %>%
+  select(Competition_Name:HomeGoals, Home_xG, Away, AwayGoals, Away_xG, everything())
+
+glimpse(sui_match_2023)
 
 euro_mls_match_2023 <- readRDS("~/Data/r/football data projects/data/euro_mls_match_2023.rds") %>%
-	rbind(spa2_match_2023)
+	rbind(sui_match_2023)
 
 euro_mls_match_2023 %>%
 	count(Competition_Name)

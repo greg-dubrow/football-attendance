@@ -81,26 +81,21 @@ por_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 por_attplot +
-  geom_text(data = por_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "Ajax"),
-            aes(x = stadium_capacity - 23000, y = team_name,
-                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-                hjust = -1)) +
-  geom_text(data = por_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "Feyenoord"),
-            aes(x = stadium_capacity - 30000, y = team_name,
+  geom_text(data = por_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "Benfica"),
+            aes(x = stadium_capacity - 35000, y = team_name,
                 label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
                 hjust = -1)) +
   labs(
-		title = glue::glue("<b>Dutch Eredivisie <span style='color: #FF7F00;'>Average attendance</span>,
+		title = glue::glue("<b>Portugese Primeira Liga <span style='color: #FF7F00;'>Average attendance</span>,
 	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
-				Dutch clubs overall at about 88% capacity, with many above 90% and only a few below 70%. <br>
-		                   Groningen total includes 3 match behind closed doors, thus 0 attendance."))
+				Portugese clubs overall at about 60% capacity, only two teams above 80%."))
 
-ggsave("images/plot_attendance_23_eredivisie.jpg", width = 15, height = 8,
+ggsave("images/plot_attendance_23_portugal.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)
 
 por_scatter <- attend_scatter(por_att_23_sum)
 por_scatter
 
-ggsave("images/plot_att_scatter_23_eredivisie.jpg", width = 15, height = 8,
+ggsave("images/plot_att_scatter_23_portugal.jpg", width = 15, height = 8,
        units = "in", dpi = 300)
 

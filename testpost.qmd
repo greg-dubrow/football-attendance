@@ -526,9 +526,15 @@ The plot below shows that teams with something real on the line, either the leag
 
 ## Portugal
 
+![](images/plot_attendance_23_portugal.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Portugese Premiera 2023-23 season"}
+
+![](images/plot_att_scatter_23_portugal.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Portugese Premiera 2023-23 season"}
+
+## Sweden
+
 ## Switzerland
 
-## Turkey
+
 
 
 :::
