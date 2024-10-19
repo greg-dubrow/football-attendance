@@ -38,6 +38,10 @@ att23_all <-
 				 capacity_avg_league, capacity_min_league, capacity_max_league,
 				 capacity_pct_league)
 
+glimpse(att23_all)
+
+saveRDS(att23_all, file = "~/Data/r/football data projects/data/att23_all.rds")
+
 ## gt table
 attendall_gt <-
 att23_all %>%
@@ -54,9 +58,22 @@ att23_all %>%
 	tab_style(
 		style = cell_text(align = "center"),
 		locations = cells_column_labels(
-			columns = c(attend_avg_league, capacity_avg_league, capacity_pct_league)))
+			columns = c(attend_avg_league, capacity_avg_league, capacity_pct_league))) %>%
+  opt_interactive(use_sorting = TRUE)
 
 attendall_gt |> gtsave("images/attendall_gt.png")
+
+# correlations
+
+leagues <- list(att23_all$league)
+
+
+
+att23_all %>%
+#  filter(league == "Superliga") %>%
+  select(capacity_avg_league, capacity_pct_league, attend_avg_league) %>%
+  DataExplorer::plot_correlation(maxcat = 5L, type = "continuous", geom_text_args = list("size" = 4))
+
 
 # scatterplot
 att23_all %>%
