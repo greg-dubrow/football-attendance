@@ -63,6 +63,9 @@ sui_att_23 <- readRDS("~/Data/r/football data projects/data/att_2023_sui.rds")
 attend_sum(sui_att_23, "sui_att_23")
 glimpse(sui_att_23_sum)
 
+sui_att_23_sum <- sui_att_23_sum %>%
+  fill(league, .direction = "down")
+
 # plot using plotting df
 # run function
 sui_attplot <- attend_plot1(sui_att_23_sum)

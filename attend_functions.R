@@ -36,6 +36,7 @@ attend_sum <- function(input_df, dfname = "NA") {
 		# mutate(attendance_tot2 = sum(match_attendance)) %>%
 		# mutate(capacity_pct_team = attendance_tot2 / capacity_tot2) %>%
 		# ungroup() %>%
+	  fill(league, .direction = "down") %>%
 		select(team_name = match_home, stadium_name = match_stadium, stadium_capacity = capacity,
 					 attend_avg_team, attend_min_team, attend_max_team,
 					 attend_tot_team, capacity_tot_team, capacity_pct_team,

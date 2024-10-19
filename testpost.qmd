@@ -60,11 +60,11 @@ Reading a post on a football blog comparing average attendances across leagues i
 -   Are there differences by clubs within each league?
 -   Did the presence of Lionel Messi make a difference in MLS attendances for Inter Miami matches?
 
-To do the analysis I needed match attendance and stadium capacity. Match attendance comes from [FBRef](https://fbref.com/) via the `worldfootballR` package. Stadium data was scraped from from Wikipedia pages. I've pulled data for MLS and the ten 1st division leagues in Europe: the 5 major top flights in England, France, Germany, Italy & Spain; along with Belgium, Denmark (of course), Netherlands, Portugal, and Sweden. Because Sweden, like MLS, runs a spring-fall schedule I'm using the 2022-23 season figures for better comparison, even though the 2023-24 season just ended in all other Euro leagues.
+To do the analysis I needed match attendance and stadium capacity. Match attendance comes from [FBRef](https://fbref.com/) via the `worldfootballR` package. Stadium data was scraped from from Wikipedia pages. I've pulled data for MLS and the ten 1st division leagues in Europe: the 5 major top flights in England, France, Germany, Italy & Spain; along with Belgium, Denmark (of course), Netherlands, Portugal, Sweden, and Switzerland. Because Sweden, like MLS, runs a spring-fall schedule I'm using the 2022-23 season figures for better comparison, even though the 2023-24 season just ended in all other Euro leagues. I'd hoped to add Turkey but 90% of the matches did not have any attendance numbers reported. 
 
 It's worth noting a big caveat about attendance figures; in the US it's generally reported as tickets accounted for (sold, given away, etc), not the turnstile count. Most Premier League clubs also use that method. I'm not sure how attendance is counted in other leagues. So if you wonder why your favorite team shows a higher average capacity than the eyeball test of vacant seats, that's why.
 
-It's also worth noting that the FBRef data may not be 100% accurate. In putting together the France data for instance, I noticed that some stadiums listed as venues were incorrect. I did let them know and I think they are correcting the problem matches. I only spotted those errors, though, because I know the league well enough having lived in France for a bit. 
+It's also worth noting that the FBRef data may not be 100% accurate. In putting together the France data for instance, I noticed that some stadiums listed as venues were incorrect. For Denmark they transposed the 2nd stage groups, champinship and relegation. In each case I let them know and they say they are correcting the problem matches. I only spotted those errors, though, because I know the leagues well enough having lived in France for a bit and living now in Denmark. 
 
 Another data challenge was inconsistent naming of stadiums between FBRef and Wikipedia. I could only fix the names after doing the initial join, seeing what didn't match, and correcting from there.
 
@@ -72,11 +72,11 @@ Another data challenge was inconsistent naming of stadiums between FBRef and Wik
 
 The plan here is:
 
--   Show how I got the stadium information and match data.
+-   Show how I got the stadium information and match data, cleaned & joined the sets, and created functions to prep the data for visualization and for the plots. It's always better to write a function if you know you'll be repeating a process.
 
 -   Display the top-line figures for all leagues - average attendance, stadium capacity, average percent capacity for the season, and smallest and largest stadiums.
 
--   After that we'll look at each league individually by way of a visualization displaying by-team numbers compared to the league average. 
+-   After that we'll look at each league individually by way of visualizations displaying by-team numbers compared to the league average. 
 
 -   For the individual league snapshots there will be two sets of tabsets, the top 5 Euro leagues and MLS in one tabset, and the smaller Euro leagues in the other. 
 
@@ -88,9 +88,11 @@ Yes, it's a bit of a long post, so here are the highlights:
 
 -   The Premier League & Bundesliga have the strongest overall demand, with most clubs exceeding 90% capacity.
 
--   MLS has most clubs around 85%, with many clubs above that level.
+-   Most MLS clubs are around around 85%, with many clubs above that level. 
 
 -   The top clubs in France, Italy, & Spain are around 80%-90% capacity but many clubs struggle to reach even 70% capacity. 
+
+-  In the smaller leagues, there is generally lower capacity, but much more variance between clubs.
 
 -   Overall then, demand for MLS tickets compares favorably with European leagues. It's not as strong league-wide as the Premier League or Bundesliga, but it's close. And MLS does better on average than the other major European leagues.
 
@@ -121,7 +123,8 @@ ger_url <- "https://en.wikipedia.org/wiki/List_of_football_stadiums_in_Germany"
 ger_url_bow <- polite::bow(ger_url)
 ger_url_bow
 
-# get the datainto a list, and pull out the html nodes (see Isabella's post for the how-to)
+# get the data into a list, and pull out the html nodes 
+# (see Isabella's post for the how-to)
 ger_stad_html <-
 	polite::scrape(ger_url_bow) %>%  # scrape web page
 	rvest::html_nodes("table.wikitable.sortable") %>% # pull out specific table
@@ -309,7 +312,7 @@ The first part of the function call is the match data. The text in quotes will c
 
 Now that we have a nice tidy dataframe to plot, let's make the plot. Again, since I'm making multiples of the same plot, I wrote a function. 
 
-```{r plotfunction}
+```{r plot1function}
 #| warning: false
 #| message: false 
 #| error: false
@@ -388,10 +391,43 @@ So now we can create the base plot with just one line of code:
 
 The title and some other elements will be added individually for each league plot. But but writing the function I cut down the overall amount of code by a significant amount.
 
+I also did a scatterplot of stadium capacity on the x axis and average match capacity by team on the y axies. The code for the function is here:
+
+```{r plot2function}
+#| warning: false
+#| message: false 
+#| error: false
+#| echo: true
+#| eval: false
+#| code-overflow: scroll
+#| code-fold: true
+#| code-summary: "Show code for plot function"
+
+
+attend_scatter <- function(plotdf) {
+  plotdf %>%
+  ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
+  geom_point() +
+  geom_smooth() +
+  geom_text_repel(aes(label = team_name)) +
+  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+  scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
+  labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
+  theme_minimal() +
+  theme_minimal()
+}
+```
+
+Getting the scatterplot thus requires just one line of code:
+`bundes_scatter <- attend_scatter(bundes_att_23_sum)`
+
 To run the summary and plot functions I put them in a separate script in this project and used the `source()` command, in this case: `source("attend_functions.R")`. Using `source()` keeps that job in a separate file, making it easier to edit and keeping the analytical files focused on their jobs.
 
 Before we get to the individual league plots I want to run a few tables to show the top-line analysis across leagues. To do that we'll need to join the summary tables together, create a table in `gt` and write a slightly different plot. I won't show the code for all that.
 
+## Average match capacity by league
+
+**GT tables here**
 
 
 ## Club attendance figures for Top 5 European leagues & MLS
@@ -492,7 +528,7 @@ Once Messi made his debut, attendance at Inter Miami matches home and away, whet
 
 ## Club attendance figures for other European leagues
 
-What about the other European leagues, those in Belgium, Denmark, the Netherlands, Portugal, Switzerland, and Turkey?
+What about the other European leagues, those in Belgium, Denmark, the Netherlands, Portugal, Sweden, and Switzerland?
 
 ::: {.panel-tabset}
 
@@ -505,7 +541,7 @@ What about the other European leagues, those in Belgium, Denmark, the Netherland
 
 ## Denmark
 
-![](images/plot_attendance_23_superligadk.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Danish Superliga 2023-23 season"}
+![](images/plot_attendance_23_superligadk.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Danish Superliga 2023-23 season"}   
 
 ![](images/plot_att_scatter_23_superligadk.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Danish Superliga 2023-23 season"}
 
@@ -532,9 +568,18 @@ The plot below shows that teams with something real on the line, either the leag
 
 ## Sweden
 
+![](images/plot_attendance_23_swe.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swedish Allsvenskan 2023-23 season"}
+
+
+![](images/plot_att_scatter_23_swe.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in the Swedish Allsvenskan 2023-23 season"}
+
+
 ## Switzerland
 
+![](images/plot_attendance_23_sui.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swiss Super League 2023-23 season"}
 
+
+![](images/plot_att_scatter_23_sui.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in the Swiss Super League 2023-23 season"}
 
 
 :::
