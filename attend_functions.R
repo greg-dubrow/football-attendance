@@ -141,6 +141,30 @@ attend_scatter <- function(plotdf) {
   theme_minimal()
 }
 
+## read in and rbind attendance files
+combine_rds_files <- function(directory) {
+  # List all RDS files in the specified directory
+  rds_files <- list.files(directory, pattern = "^att_2023.*\\.rds", full.names = TRUE)
+
+  # Initialize an empty list to store dataframes
+  df_list <- list()
+
+  # Loop through each RDS file, read it, select columns, and store in the list
+  for (file in rds_files) {
+    data <- readRDS(file)
+    # Select the desired columns
+    selected_data <- data %>%
+      select(league, match_date, match_home, match_away, match_stadium, capacity, match_attendance)
+    df_list[[file]] <- selected_data
+  }
+
+  # Combine all dataframes in the list into one dataframe
+  combined_df <- bind_rows(df_list)
+
+  return(combined_df)
+}
+
+
 
 ### paired color palette
 # [1] "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C"
