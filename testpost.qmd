@@ -428,6 +428,7 @@ Before we get to the individual league plots I want to run a few tables to show 
 ## Average match capacity by league
 
 **GT tables here**
+![](images/attendall_gt.png){fig-alt="connected dot plot showing average attendance and stadium capacity by club in bundesliga 2023-23 season"}
 
 
 ## Club attendance figures for Top 5 European leagues & MLS

@@ -137,7 +137,6 @@ attend_scatter <- function(plotdf) {
   scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
   scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
   labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
-  theme_minimal() +
   theme_minimal()
 }
 

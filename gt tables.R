@@ -38,8 +38,8 @@ att23_all <-
 				 capacity_avg_league, capacity_min_league, capacity_max_league,
 				 capacity_pct_league)
 
-
-
+## gt table
+attendall_gt <-
 att23_all %>%
   arrange(desc(capacity_pct_league)) %>%
   select(league, capacity_avg_league, attend_avg_league, capacity_pct_league) %>%
@@ -56,6 +56,28 @@ att23_all %>%
 		locations = cells_column_labels(
 			columns = c(attend_avg_league, capacity_avg_league, capacity_pct_league)))
 
+attendall_gt |> gtsave("images/attendall_gt.png")
+
+# scatterplot
+att23_all %>%
+  ggplot(aes(x = capacity_avg_league, y = capacity_pct_league)) +
+    geom_point() +
+    geom_smooth() +
+    geom_text_repel(aes(label = league)) +
+    scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+    scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
+    labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
+    theme_minimal()
+
+att23_all %>%
+  ggplot(aes(x = attend_avg_league, y = capacity_pct_league)) +
+  geom_point() +
+  geom_smooth() +
+  geom_text_repel(aes(label = league)) +
+  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+  scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
+  labs(x = "Average Match Attendance", y = "Avg % of Capacity") +
+  theme_minimal()
 
 
 ## long way code
