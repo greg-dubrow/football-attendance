@@ -36,25 +36,25 @@ att23_all <-
 						capacity_pct_league = attend_sum_league / capacity_sum_league) %>%
 	select(league, attend_avg_league, attend_min_league, attend_max_league,
 				 capacity_avg_league, capacity_min_league, capacity_max_league,
-				 capacity_pct_league) %>%
-  view()
+				 capacity_pct_league)
 
 
-	gt() %>%
+
+att23_all %>%
+  arrange(desc(capacity_pct_league)) %>%
+  select(league, capacity_avg_league, attend_avg_league, capacity_pct_league) %>%
+  gt() %>%
 	fmt_number(columns = c(attend_avg_league, capacity_avg_league), decimals = 0) %>%
-	cols_label(attend_avg_league = "League Average Attendance", attend_min_league = "Lowest Match Attendance")
-,
-						 elev_total = md("Total Elevation *(meters)*"),
-						 time_total1 = md("Total Time *(hours/min/sec)*"),
-						 time_total2 = md("Total Time *(days/hours/min/sec)*"),
-						 cal_total = "Total Calories", kiloj_total = "Total Kilojoules") %>%
-	cols_align(align = "center", columns = everything()) %>%
-	tab_style(style = cell_fill(color = "grey"),
-						locations = cells_body(rows = seq(1, 1, 1))) %>%
+  fmt_percent(columns = c(capacity_pct_league), decimals = 1) %>%
+	cols_label(attend_avg_league = "League Average Attendance", capacity_avg_league = "League Average Stadium Capacity",
+	           capacity_pct_league = "League Average Match Capacity", league = "League") %>%
+	cols_align(align = "right", columns = everything()) %>%
+  cols_align(align = "left", columns = c(league)) %>%
+  opt_stylize(style = 5) %>%
 	tab_style(
 		style = cell_text(align = "center"),
 		locations = cells_column_labels(
-			columns = c(rides, km_total, elev_total, time_total1, time_total2, cal_total, kiloj_total)))
+			columns = c(attend_avg_league, capacity_avg_league, capacity_pct_league)))
 
 
 
