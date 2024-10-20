@@ -614,12 +614,20 @@ Once Messi made his debut, attendance at Inter Miami matches home and away, whet
 ## Club attendance figures for other European leagues
 
 What about the other European leagues, those in Belgium, Denmark, the Netherlands, Portugal, Sweden, and Switzerland?
+<br><br>
+
+```{=html}
+<iframe width="800" height="800" src="images/plot_attendance_23_belgium_i.html"></iframe>
+```
 
 ::: {.panel-tabset}
 
 ## Belgium
 
 ![](images/plot_attendance_23_belgium.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+
+![](images/plot_attendance_23_belgium_i.html)
+
 
 ![](images/plot_att_scatter_23_belgium.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
 

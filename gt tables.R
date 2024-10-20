@@ -63,6 +63,7 @@ att23_all %>%
 
 attendall_gt |> gtsave("images/attendall_gt.png")
 
+
 # correlations
 
 leagues <- list(att23_all$league)
