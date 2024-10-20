@@ -53,11 +53,18 @@ att23_all <- readRDS("~/Data/r/football data projects/data/att23_all.rds")
 
 ```
 
+## Preamble
+evolution of project
+trust instincts of your visualization isn't telling the story you are hoping you're telling
+
+a slightly longer post than i planned on...one of those projects that started as a simple idea to compare league averages on percent of stadium capacity that grew into looking at the club level...use the table of contents to skip to the things you want to see.
+
+tried to do interactive charts but couldn't get the html widgets to load nicely in quarto
+
+
 ## Introduction {#intro}
 
-::: {style="font-size: 75%;"}
-*(a slightly longer post than i planned on...one of those projects that started as a simple idea to compare league averages on percent of stadium capacity that grew into looking at the club level...use the table of contents to skip to the things you want to see.)* 
-::: 
+
 
 Reading a post on a football blog comparing average attendances across leagues in Europe with Major League Soccer (MLS) in the US, I thought that the analysis needed a bit more than averages. Looking at stadium capacity raised more interesting questions, including:
 
