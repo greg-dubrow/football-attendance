@@ -208,11 +208,14 @@ bel_att_23_sum %>%
             colour = "white") +
   scale_y_discrete(labels= function(x) highlight(x, "League Average", "black")) +
   scale_x_continuous(limits = c(0,1),
+                     expand = expansion(mult = c(0, 0.01)),
                      labels = scales::percent_format()) +
   labs(x = "", y = "") +
   theme_minimal() +
   theme(panel.grid = element_blank(),
-        axis.text.y = ggtext::element_markdown(size = 10))
+        plot.subtitle = ggtext::element_markdown(size = 10),
+        plot.caption = ggtext::element_markdown(),
+        axis.text.y = ggtext::element_markdown(size = 11))
 
 bel_bubble <-
 bel_att_23_sum %>%
@@ -242,25 +245,35 @@ bel_att_23_sum %>%
   # line connecting the points.
   geom_segment(aes(x=attend_avg_team + 900 , xend=stadium_capacity - 900,
                    y=team_name, yend=team_name), color="lightgrey") +
-  scale_x_continuous(limits = c(0,
-                                max(bel_att_23_sum$stadium_capacity + 500)),
+  scale_x_continuous(limits = c(0, max(bel_att_23_sum$stadium_capacity + 500)),
+                     expand = expansion(mult = c(0, 0.01)),
                      breaks = scales::pretty_breaks(6),
                      labels = scales::comma_format(big.mark = ',')) +
   labs(x = "", y = "",
-       subtitle = "*The further the orange dot is to the left of the blue dot, the more average attendance is less than stadium capacity.*",
+       # subtitle = "*The further the orange dot (avg attendance) is to the left of the blue dot (stadium capacity),
+       # the more average attendance is less than stadium capacity.*",
        caption = "*Match attendance data from FBRef using worldfootballr package. Stadium capacity data from Wikipedia*") +
   theme_minimal() +
   theme(panel.grid = element_blank(),
         axis.text.y=element_blank(),
-        plot.title = ggtext::element_textbox_simple(
-          size = 12, fill = "cornsilk",
-          lineheight = 1.5,
-          padding = margin(5.5, 5.5, 5.5, 2),
-          margin = margin(0, 0, 5.5, 0)),
-        plot.subtitle = ggtext::element_markdown(size = 10),
+        plot.subtitle = ggtext::element_markdown(size = 10, hjust = 1),
         plot.caption = ggtext::element_markdown())
 
 bel_bar + bel_bubble
 
 bel_bar + bel_bubble +
-  plot_layout(widths = c(1.5, 2))
+  plot_layout(widths = c(1.5, 2)) +
+  plot_annotation(title = "<b>Belgian Jupiler League
+  <span style='color: #1F78B4;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b>, and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b>, by club, 2022-23 season.<br>
+  Belgian clubs overall at about 60% capacity, with many above 70% and a few between 15%-30%.
+  Only Antwerp above 80% capacity.<br>
+  Club Brugge & Cecle Brugge both play at Jan Breydelstadion.
+                  Anderlecht figures include 1 match behind closed doors, thus 0 attendance.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))

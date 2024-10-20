@@ -67,6 +67,16 @@ highlight2 = function(x, pat, color="black", family="") {
 
 # Plotting functions ------------------------------------------------------
 
+## bubble and bar plots to combine
+# bar chart
+attend_plot1 <- function(plotdf) {
+  plotdf %>%
+
+
+
+}
+
+
 ## plotting function. run against plotting df, output as object, then add title
 attend_plot1 <- function(plotdf) {
 	plotdf %>%
