@@ -55,6 +55,10 @@ att23_all <- readRDS("~/Data/r/football data projects/data/att23_all.rds")
 
 ## Introduction {#intro}
 
+::: {style="font-size: 75%;"}
+*(a slightly longer post than i planned on...one of those projects that started as a simple idea to compare league averages on percent of stadium capacity that grew into looking at the club level...use the table of contents to skip to the things you want to see.)* 
+::: 
+
 Reading a post on a football blog comparing average attendances across leagues in Europe with Major League Soccer (MLS) in the US, I thought that the analysis needed a bit more than averages. Looking at stadium capacity raised more interesting questions, including:
 
 -   What percentage of available tickets were accounted for, or to flip the question, how much of the stadium was full? 
@@ -474,17 +478,18 @@ Premier League and Bundesliga are in very high demand, and Dutch Eredisie demand
 
 If you're a football tourist, tickets are easier to come by in Belgium, Portugal (Primeira Liga), Denmark (Superliga), and Sweden (Allsvenskan).
 
+::: {style="font-size: 75%;"}
 *table is sortable - click on column header*
+:::
 ```{r gt}
 #| warning: false
 #| message: false 
 #| error: false
-#| echo: false
+#| echo: true
 #| eval: true
 #| code-overflow: scroll
 #| code-fold: true
-#| code-summary: "Show code for plotting"
-
+#| code-summary: "Show code for interactive gt table"
 
 att23_all %>%
   arrange(desc(capacity_pct_league)) %>%
@@ -492,16 +497,18 @@ att23_all %>%
   gt() %>%
 	fmt_number(columns = c(attend_avg_league, capacity_avg_league), decimals = 0) %>%
   fmt_percent(columns = c(capacity_pct_league), decimals = 1) %>%
-	cols_label(attend_avg_league = md("League Average<br>Attendance"), 
-	           capacity_avg_league = md("League Average<br> Stadium Capacity"),
-	           capacity_pct_league = md("League Average<br> Match Capacity"), league = "League") %>%
+	cols_label(attend_avg_league = md("<span style=color:white>League Average<br>Attendance</span>"), 
+	           capacity_avg_league = md("<span style=color:white>League Average<br> Stadium Capacity</span>"),
+	           capacity_pct_league = md("<span style=color:white>League Average<br> Match Capacity</span>"), 
+	           league = md("<span style=color:white>League</span>")) %>%
 	cols_align(align = "right", columns = everything()) %>%
   cols_align(align = "left", columns = c(league)) %>%
-  opt_stylize(style = 1, color = "blue") %>%
+  opt_stylize(style = 6) %>%
 	tab_style(
 		style = cell_text(align = "center"),
 		locations = cells_column_labels(
 			columns = c(attend_avg_league, capacity_avg_league, capacity_pct_league))) %>%
+  # function to make table sortable
   opt_interactive(use_sorting = TRUE,
                   use_pagination = FALSE,
                   use_compact_mode = TRUE)

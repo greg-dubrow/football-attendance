@@ -89,6 +89,11 @@ bel_attplot +
 ggsave("images/plot_attendance_23_belgium.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)
 
+
+## add interactivity
+
+
+
 bel_scatter <- attend_scatter(bel_att_23_sum)
 bel_scatter
 
