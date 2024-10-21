@@ -15,7 +15,6 @@ options(scipen=10000)
 # functions for summary df and plots
 source("attend_functions.R")
 
-
 # load attendance data
 mls_match_2023 <- readRDS("~/Data/r/football data projects/data/euro_mls_match_2023.rds") %>%
 	filter(Country == "USA") %>%
@@ -114,6 +113,7 @@ mls_att_23 %>%
 saveRDS(mls_att_23, file = "~/Data/r/football data projects/data/att_2023_mls.rds")
 
 mls_att_23 <- readRDS("~/Data/r/football data projects/data/att_2023_mls.rds")
+glimpse(mls_att_23)
 
 ## Look at Messi effect for Miami & Inter away, esp clubs prior attendance & when he would have played. ##
 
@@ -217,7 +217,6 @@ mls_att_23_sum %>%
 	select(stadium_name, stadium_capacity) %>%
 	view()
 
-
 mls_att_23_sum %>%
 	count(team_name, stadium_name) %>%
 	group_by(team_name) %>%
@@ -294,89 +293,134 @@ mls_att_23_sum <- mls_att_23 %>%
 	mutate(team_name = ifelse(team_name == "San Jose Earthquakes" & stadium_name == "Stanford Stadium",
 														paste0(team_name, "-", "Stanford"), team_name))
 
+glimpse(mls_att_23_sum)
 
-# plot using plotting df
+# can't plot using plotting df b/c of over 100% capacities
+
+mls_barplot <-
+  mls_att_23_sum %>%
+  arrange(desc(capacity_pct_team)) %>%
+  mutate(team_name = fct_reorder(team_name, capacity_pct_team)) %>%
+  ggplot(aes(capacity_pct_team, team_name)) +
+  geom_col(fill = "#8DA0CB") +
+  geom_text(aes(capacity_pct_team, team_name,
+                label = scales::percent(round(capacity_pct_team, digits = 4), accuracy = 0.1)),
+            hjust = 1.1,
+            colour = "white") +
+  scale_y_discrete(labels= function(x) highlight(x, "League Average", "black")) +
+  scale_x_continuous(limits = c(0,1.1),
+                     breaks = scales::pretty_breaks(6),
+                     expand = expansion(mult = c(0, 0.01)),
+                     labels = scales::percent_format()) +
+  labs(x = "", y = "") +
+  theme_minimal() +
+  theme(panel.grid = element_blank(),
+        plot.subtitle = ggtext::element_markdown(size = 10),
+        plot.caption = ggtext::element_markdown(),
+        axis.text.y = ggtext::element_markdown(size = 11)) +
+    annotate(geom = "richtext",
+             label = "*Notes:<br>
+					 i) Atlanta, Charlotte, Chicago, New England, Seattle & Vancouver played<br>some matches with expanded capacity
+					 but in their regular stadium.<br> Capacity figure has been normalized to account for the changes.<br>
+					 It is possible expanded capacity figures not reported correctly, so some<br>match percentages may be incorrect.<br>
+					 ii) Teams with +100% capacity might have sold standing-room tickets<br>& thus exceeded reported seated capacity.<br>
+					 iii) For CF Montréal at Stade Olympique, LA Galaxy at Rose Bowl,<br>SJ Earthquakes at Levi's & Stanford, &
+					 NYCFC at Red Bull Area, only<br>1 match played at each venue.*",
+             x = .68, y = "NYCFC-Red Bull Arena", hjust = 0, vjust = 0, size = 2)
+
+mls_barplot
+
 # run function
-mls_attplot <- mls_att_23_sum %>%
-	ggplot(aes(stadium_capacity, reorder(team_name, capacity_avg_team))) +
-	# points for avg attendace & capacity
-	geom_point(aes(x=capacity_avg_team, y= reorder(team_name, capacity_avg_team)),
-						 color="#1F78B4", size=10, alpha = .5 ) +
-	geom_point(aes(x=attend_avg_team, y= reorder(team_name, capacity_avg_team)),
-						 color="#FF7F00", size=10, alpha = .5 ) +
-	# data labels for points
-	geom_text(data = mls_att_23_sum %>% filter(capacity_pct_team < .95),
-						aes(x = attend_avg_team,
-								label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
-						color = "black", size = 2.5) +
-	geom_text(data = mls_att_23_sum %>% filter(capacity_pct_team >= .95),
-						aes(x = attend_avg_team,
-								label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
-						color = "black", size = 2.5, hjust = 1.5) +
-	geom_text(aes(x = capacity_avg_team,
-								label = format(round(capacity_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
-						color = "black", size = 2.5) +
-	# line connecting the points.
-	geom_segment(aes(x=attend_avg_team + 900 , xend=capacity_avg_team - 900,
-									 y=team_name, yend=team_name), color="lightgrey") +
-	# sets league average in bold
-	scale_y_discrete(labels= function(x) highlight(x, "League Average", "black")) +
-	# text for avg season capacity
-	geom_text(data = mls_att_23_sum %>% filter(capacity_avg_team < capacity_max_league & team_name != "League Average"),
-						aes(x = capacity_avg_team + 1100, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = -.02)) +
-	geom_text(data = mls_att_23_sum %>% filter(team_name == "League Average"),
-						aes(x = capacity_avg_team + 1100, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = -.02, fontface = "bold")) +
-	scale_x_continuous(limits = c(min(mls_att_23_sum$attend_avg_team),
-																max(mls_att_23_sum$capacity_avg_team + 3000)),
-										 breaks = scales::pretty_breaks(8),
-										 labels = scales::comma_format(big.mark = ',')) +
-	# scale_x_continuous(limits = c(min(mls_att_23_sum$stadium_capacity - 2000),
-	# 															max(mls_att_23_sum$stadium_capacity + 3000)),
-	# 									 breaks = scales::pretty_breaks(6),
-	# 									 labels = scales::comma_format(big.mark = ',')) +
-	labs(x = "Stadium capacity", y = "",
-			 subtitle = "*The further the red dot is to the left of the blue dot, the more average attendance is less than stadium capacity. Teams sorted by stadium capacity.*",
-			 caption = "*Match attendance data from FBRef using worldfootballr package. Stadium capacity data from Wikipedia*") +
-	theme_minimal() +
-	theme(panel.grid = element_blank(),
-				plot.title.position = "plot",
-				plot.title = ggtext::element_textbox_simple(
-					size = 12, fill = "cornsilk",
-					lineheight = 1.5,
-					padding = margin(5.5, 5.5, 5.5, 2),
-					margin = margin(0, 0, 5.5, 0)),
-				plot.subtitle = ggtext::element_markdown(size = 10),
-				plot.caption = ggtext::element_markdown(),
-				axis.text.x = ggtext::element_markdown(size = 10),
-				axis.text.y = ggtext::element_markdown(size = 11))
+mls_bubbleplot <-
+  mls_att_23_sum %>%
+    arrange(desc(capacity_pct_team)) %>%
+    mutate(team_name = fct_reorder(team_name, capacity_pct_team)) %>%
+    ggplot(aes(stadium_capacity, capacity_pct_team)) +
+    # points for avg attendace & capacity
+    # points for avg attendance & capacity
+    geom_point(aes(x=stadium_capacity, y= reorder(team_name, capacity_pct_team)),
+               color="#1F78B4", size=15, alpha = .5 ) +
+    geom_point(aes(x=attend_avg_team, y= reorder(team_name, capacity_pct_team)),
+               color="#FF7F00", size=15, alpha = .5 ) +
+    geom_text(aes(x = attend_avg_team, y= reorder(team_name, capacity_pct_team),
+                  label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+              color = "black", size = 3.5) +
+    geom_text(aes(x = stadium_capacity, y= reorder(team_name, capacity_pct_team),
+                  label = format(round(stadium_capacity, digits = 0),big.mark=",",scientific=FALSE)),
+              color = "black", size = 3.5) +
+    # line connecting the points.
+    geom_segment(aes(x=attend_avg_team + 1100 , xend=stadium_capacity - 1100,
+                     y=team_name, yend=team_name), color="lightgrey") +
+    scale_x_continuous(limits = c(0, max(mls_att_23_sum$stadium_capacity + 500)),
+                       expand = expansion(mult = c(0, 0.01)),
+                       breaks = scales::pretty_breaks(6),
+                       labels = scales::comma_format(big.mark = ',')) +
+    labs(x = "", y = "",
+         # subtitle = "*The further the orange dot (avg attendance) is to the left of the blue dot (stadium capacity),
+         # the more average attendance is less than stadium capacity.*",
+         caption = "*Match attendance data from FBRef using worldfootballr package. Stadium capacity data from Wikipedia*") +
+    theme_minimal() +
+    theme(panel.grid = element_blank(),
+          axis.text.y=element_blank(),
+          plot.subtitle = ggtext::element_markdown(size = 10, hjust = 1),
+          plot.caption = ggtext::element_markdown())
 
-# add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
-mls_attplot +
-	geom_text(data = mls_att_23_sum %>% filter(capacity_avg_team == capacity_max_league),
-						aes(x = capacity_avg_team - 25000, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .04)) +
-	annotate(geom = "richtext",
-					 label = "*Notes:<br>
-					 i) Atlanta, Charlotte, Chicago, New England, Seattle & Vancouver played some matches with expanded capacity
-					 <br>but in their regular stadium. Capacity figure has been normalized to account for the changes.<br>
-					 It is possible expanded capacity figures not reported correctly, so some match percentages may be incorrect.<br>
-					 ii) Teams with +100% capacity might have sold standing-room tickets & thus exceeded reported seated capacity.<br>
-					 iii) For CF Montréal at Stade Olympique, LA Galaxy at Rose Bowl, SJ Earthquakes at Levi's & Stanford, & <br>
-					 NYCFC at Red Bull Area, only 1 match played at each venue.*",
-					 x = 45000, y = "Colorado Rapids", hjust = 0, vjust = 0, size = 3.5) +
-	labs(
-		title = glue::glue("<b>Major League Soccer <span style='color: #FF7F00;'>Average attendance</span>,
-	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2023 season.</b><br>
+mls_bubbleplot
+
+# combine plots and add notes
+mls_barplot + mls_bubbleplot +
+  plot_annotation(title = "<b>MLS
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
 				MLS overall at about 85% capacity. Lower percentages for the more poorly performing teams (Chicago)
-											 and for one-off matches at larger venues."))
+				and for one-off matches at larger venues.<br>
+        See scatterplot below for stadium capacity numbers obscured by overlapping bubbles.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
 ggsave("images/plot_attendance_23_mls.jpg", width = 16, height = 10,
 			 units = "in", dpi = 300)
+
+# remove 1-off matches
+glimpse(mls_att_23_sum)
+
+mls_att_23_sum %>%
+  filter(!(team_name %in% c("NYCFC-Red Bull Arena", "CF Montréal-Stade Olympique",
+                            "San Jose Earthquakes-Levi's", "San Jose Earthquakes-Stanford",
+                            "LA Galaxy-Rose Bowl"))) %>%
+  ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
+  geom_point() +
+  geom_smooth() +
+  geom_text_repel(aes(label = team_name)) +
+  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+  scale_y_continuous(limits = c(0,1.1), labels = scales::percent_format()) +
+  labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
+  theme_minimal()
+
+ggsave("images/plot_att_scatter_23_mls1.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
+
+mls_att_23_sum %>%
+  filter(!(team_name %in% c("NYCFC-Red Bull Arena", "CF Montréal-Stade Olympique",
+                            "San Jose Earthquakes-Levi's", "San Jose Earthquakes-Stanford",
+                            "LA Galaxy-Rose Bowl"))) %>%
+  filter(stadium_capacity < 60000) %>%
+  ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
+  geom_point() +
+  geom_smooth() +
+  geom_text_repel(aes(label = team_name)) +
+  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+  scale_y_continuous(limits = c(0,1.1), labels = scales::percent_format()) +
+  labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
+  theme_minimal()
+
+ggsave("images/plot_att_scatter_23_mls2.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
 
 
 ######
@@ -424,3 +468,82 @@ mls_att23 %>%
 	view()
 
 ####
+
+## old plot code
+mls_attplot <- mls_att_23_sum %>%
+  ggplot(aes(stadium_capacity, reorder(team_name, capacity_avg_team))) +
+  # points for avg attendace & capacity
+  geom_point(aes(x=capacity_avg_team, y= reorder(team_name, capacity_avg_team)),
+             color="#1F78B4", size=10, alpha = .5 ) +
+  geom_point(aes(x=attend_avg_team, y= reorder(team_name, capacity_avg_team)),
+             color="#FF7F00", size=10, alpha = .5 ) +
+  # data labels for points
+  geom_text(data = mls_att_23_sum %>% filter(capacity_pct_team < .95),
+            aes(x = attend_avg_team,
+                label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+            color = "black", size = 2.5) +
+  geom_text(data = mls_att_23_sum %>% filter(capacity_pct_team >= .95),
+            aes(x = attend_avg_team,
+                label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+            color = "black", size = 2.5, hjust = 1.5) +
+  geom_text(aes(x = capacity_avg_team,
+                label = format(round(capacity_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+            color = "black", size = 2.5) +
+  # line connecting the points.
+  geom_segment(aes(x=attend_avg_team + 900 , xend=capacity_avg_team - 900,
+                   y=team_name, yend=team_name), color="lightgrey") +
+  # sets league average in bold
+  scale_y_discrete(labels= function(x) highlight(x, "League Average", "black")) +
+  # text for avg season capacity
+  geom_text(data = mls_att_23_sum %>% filter(capacity_avg_team < capacity_max_league & team_name != "League Average"),
+            aes(x = capacity_avg_team + 1100, y = team_name,
+                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
+                hjust = -.02)) +
+  geom_text(data = mls_att_23_sum %>% filter(team_name == "League Average"),
+            aes(x = capacity_avg_team + 1100, y = team_name,
+                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
+                hjust = -.02, fontface = "bold")) +
+  scale_x_continuous(limits = c(min(mls_att_23_sum$attend_avg_team),
+                                max(mls_att_23_sum$capacity_avg_team + 3000)),
+                     breaks = scales::pretty_breaks(8),
+                     labels = scales::comma_format(big.mark = ',')) +
+  # scale_x_continuous(limits = c(min(mls_att_23_sum$stadium_capacity - 2000),
+  # 															max(mls_att_23_sum$stadium_capacity + 3000)),
+  # 									 breaks = scales::pretty_breaks(6),
+  # 									 labels = scales::comma_format(big.mark = ',')) +
+  labs(x = "Stadium capacity", y = "",
+       subtitle = "*The further the red dot is to the left of the blue dot, the more average attendance is less than stadium capacity. Teams sorted by stadium capacity.*",
+       caption = "*Match attendance data from FBRef using worldfootballr package. Stadium capacity data from Wikipedia*") +
+  theme_minimal() +
+  theme(panel.grid = element_blank(),
+        plot.title.position = "plot",
+        plot.title = ggtext::element_textbox_simple(
+          size = 12, fill = "cornsilk",
+          lineheight = 1.5,
+          padding = margin(5.5, 5.5, 5.5, 2),
+          margin = margin(0, 0, 5.5, 0)),
+        plot.subtitle = ggtext::element_markdown(size = 10),
+        plot.caption = ggtext::element_markdown(),
+        axis.text.x = ggtext::element_markdown(size = 10),
+        axis.text.y = ggtext::element_markdown(size = 11))
+
+# add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
+mls_attplot +
+  geom_text(data = mls_att_23_sum %>% filter(capacity_avg_team == capacity_max_league),
+            aes(x = capacity_avg_team - 25000, y = team_name,
+                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
+                hjust = .04)) +
+  annotate(geom = "richtext",
+           label = "*Notes:<br>
+					 i) Atlanta, Charlotte, Chicago, New England, Seattle & Vancouver played some matches with expanded capacity
+					 <br>but in their regular stadium. Capacity figure has been normalized to account for the changes.<br>
+					 It is possible expanded capacity figures not reported correctly, so some match percentages may be incorrect.<br>
+					 ii) Teams with +100% capacity might have sold standing-room tickets & thus exceeded reported seated capacity.<br>
+					 iii) For CF Montréal at Stade Olympique, LA Galaxy at Rose Bowl, SJ Earthquakes at Levi's & Stanford, & <br>
+					 NYCFC at Red Bull Area, only 1 match played at each venue.*",
+           x = 45000, y = "Colorado Rapids", hjust = 0, vjust = 0, size = 3.5) +
+  labs(
+    title = glue::glue("<b>Major League Soccer <span style='color: #FF7F00;'>Average attendance</span>,
+	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2023 season.</b><br>
+				MLS overall at about 85% capacity. Lower percentages for the more poorly performing teams (Chicago)
+											 and for one-off matches at larger venues."))

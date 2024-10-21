@@ -582,27 +582,34 @@ fra_attplot +
 
 ```
 
-![](images/plot_attendance_23_ligue1.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in ligue1 2023-23 season"}
+![](images/plot_attendance_23_ligue1.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in ligue1 2022-23 season"}
 
 
 ## Germany
 
-![](images/plot_attendance_23_bundes.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in bundesliga 2023-23 season"}
+![](images/plot_attendance_23_bundes.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in bundesliga 2022-23 season"}
 
 
 ## Italy
 
-![](images/plot_attendance_23_seriea.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in laliga 2023-23 season"}
+![](images/plot_attendance_23_seriea.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in laliga 2022-23 season"}
 
 
 ## Spain
 
 
-![](images/plot_attendance_23_laliga.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in laliga 2023-23 season"}
+![](images/plot_attendance_23_laliga.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in laliga 2022-23 season"}
 
 ## MLS
 
 ![](images/plot_attendance_23_mls.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in MLS 2023 season"}
+Because MLS as a) too many clubs and b) lots of clubs with similar sized soccer-specific grounds (a good thing!) the stadium capacity by average percent capacity scatterplot is a bit cluttered at the lower end. And that's even with the one-off venue matches deleted. Plus the two significantly larger venues distort the left tail. 
+
+![](images/plot_att_scatter_23_mls1.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in MLS 2023 season"}
+
+So that's why this 2nd scatterplot to get a slightly more honest look at the relationship between stadum capacity and ticket demand. And what we see are a couple of clubs, NYCFC in particular, who might be playing in stadiums that are too large, or at least not reducing capacity enough to avoid killing the vibe with empty seats. NYCFC at least is taking steps to get their own stadium with a capacity more appropriate to demand. 
+
+![](images/plot_att_scatter_23_mls2.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in MLS 2022-23 season"}
 
 :::
 
@@ -628,52 +635,52 @@ What about the other European leagues, those in Belgium, Denmark, the Netherland
 
 ## Belgium
 
-![](images/plot_attendance_23_belgium.jpg){fig-alt="bar chart on the left and connected dot plot on the right showing average attendance and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+![](images/plot_attendance_23_belgium.jpg){fig-alt="bar chart on the left and connected dot plot on the right showing average attendance and stadium capacity by club in Belgian Jupiler League 2022-23 season"}
 
-![](images/plot_att_scatter_23_belgium.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+![](images/plot_att_scatter_23_belgium.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2022-23 season"}
 
 
 ## Denmark
 
-![](images/plot_attendance_23_superligadk.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Danish Superliga 2023-23 season"}   
+![](images/plot_attendance_23_superligadk.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Danish Superliga 2022-23 season"}   
 
-![](images/plot_att_scatter_23_superligadk.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Danish Superliga 2023-23 season"}
+![](images/plot_att_scatter_23_superligadk.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Danish Superliga 2022-23 season"}
 
 
 Because Denmark splits the club season into two parts, a regular league-wide round-robin home-away round and a round where the top and bottom halves compete seprately for seprate honors or ignominies, it is worth looking quickly to see if attendances increase or decrease depending on if a team is in the championship or relegation group.
 
 The plot below shows that teams with something real on the line, either the league title or avoiding relegation, tend to see an increase in the 2nd stage of competition relative to their attendance from the regualr season. So FC Copenhagen, going for the title, saw bigger crowds in the spring. So did Aalborg and Lyngby, battling hard to avoid relegation. Aalborg went down, Lyngby stayed up. The outlier in this respect is Horsens, who were in a tight relegation battle but saw a decrease in attendance for the 2nd stage.
 
-![](images/plot_attendance_23_byrounds_superligadk.jpg){fig-alt="slope graph showing average attendance and between season rounds by club in Danish Superliga 2023-23 season"}
+![](images/plot_attendance_23_byrounds_superligadk.jpg){fig-alt="slope graph showing average attendance and between season rounds by club in Danish Superliga 2022-23 season"}
 
 
 ## Netherlands
 
-![](images/plot_attendance_23_eredivisie.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+![](images/plot_attendance_23_eredivisie.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Belgian Jupiler League 2022-23 season"}
 
-![](images/plot_att_scatter_23_eredivisie.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
+![](images/plot_att_scatter_23_eredivisie.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2022-23 season"}
 
 
 ## Portugal
 
-![](images/plot_attendance_23_portugal.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Portugese Premiera 2023-23 season"}
+![](images/plot_attendance_23_portugal.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Portugese Premiera 2022-23 season"}
 
-![](images/plot_att_scatter_23_portugal.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Portugese Premiera 2023-23 season"}
+![](images/plot_att_scatter_23_portugal.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Portugese Premiera 2022-23 season"}
 
 ## Sweden
 
-![](images/plot_attendance_23_swe.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swedish Allsvenskan 2023-23 season"}
+![](images/plot_attendance_23_swe.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swedish Allsvenskan 2022-23 season"}
 
 
-![](images/plot_att_scatter_23_swe.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in the Swedish Allsvenskan 2023-23 season"}
+![](images/plot_att_scatter_23_swe.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in the Swedish Allsvenskan 2022-23 season"}
 
 
 ## Switzerland
 
-![](images/plot_attendance_23_sui.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swiss Super League 2023-23 season"}
+![](images/plot_attendance_23_sui.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swiss Super League 2022-23 season"}
 
 
-![](images/plot_att_scatter_23_sui.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in the Swiss Super League 2023-23 season"}
+![](images/plot_att_scatter_23_sui.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in the Swiss Super League 2022-23 season"}
 
 
 :::

@@ -89,27 +89,43 @@ glimpse(seriea_att_23_sum)
 
 # plot using plotting df
 # run function
-seriea_attplot <- attend_plot1(seriea_att_23_sum)
+seriea_attplot <- attend_plot_comb(seriea_att_23_sum)
 seriea_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 seriea_attplot +
-	geom_text(data = seriea_att_23_sum %>% filter(stadium_capacity == capacity_max_league),
-						aes(x = stadium_capacity - 23000, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .04)) +
-	annotate(geom = "richtext",
-					 label = "*Shares San Siro with AC Milan.*",
-					 x = 14000, y = "Internazionale", fill = NA, label.color = NA, size = 4) +
-	annotate(geom = "richtext",
-					 label = "*Shares Stadio Olimpico with AS Roma.*",
-					 x = 15000, y = "Lazio", fill = NA, label.color = NA, size = 4) +
-	labs(
-		title = glue::glue("<b>Serie A <span style='color: #FF7F00;'>Average attendance</span>,
-	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
-				Serie A overall at about 3/4 capacity, and even the top clubs do not get to any more than 90% capacity."))
+  plot_annotation(title = "<b>Serie A Italy
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
+				Serie A overall at about 3/4 capacity. The top clubs are around than 90% capacity, with a few below 60%.<br>
+				AC Milan and Internazionale both play at San Siro. Roma & Lazio both play at Stadio Olimpico.
+        Spezia stadium capacity is 10,336 & average attendance 9,295.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
 ggsave("images/plot_attendance_23_seriea.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)
 
+seriea_scatter <- attend_scatter(seriea_att_23_sum)
+seriea_scatter
 
+ggsave("images/plot_att_scatter_23_seriea.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
+
+seriea_att_23_sum %>%
+ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
+  geom_point() +
+  geom_smooth() +
+  geom_text_repel(data = seriea_att_23_sum %>% filter(!team_name == "League Average"),
+    aes(label = team_name)) +
+  geom_text_repel(data = seriea_att_23_sum %>% filter(team_name == "League Average"),
+                  aes(label = team_name), fontface = "bold") +
+  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+  scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
+  labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
+  theme_minimal()

@@ -111,7 +111,7 @@ attend_plot_comb <- function(plotdf) {
                   label = format(round(stadium_capacity, digits = 0),big.mark=",",scientific=FALSE)),
               color = "black", size = 3.5) +
     # line connecting the points.
-    geom_segment(aes(x=attend_avg_team + 1100 , xend=stadium_capacity - 1100,
+    geom_segment(aes(x=attend_avg_team + 2000 , xend=stadium_capacity - 2000,
                      y=team_name, yend=team_name), color="lightgrey") +
     scale_x_continuous(limits = c(0, max(plotdf$stadium_capacity + 500)),
                        expand = expansion(mult = c(0, 0.01)),
