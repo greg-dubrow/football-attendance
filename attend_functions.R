@@ -68,12 +68,67 @@ highlight2 = function(x, pat, color="black", family="") {
 # Plotting functions ------------------------------------------------------
 
 ## bubble and bar plots to combine
-# bar chart
-attend_plot1 <- function(plotdf) {
-  plotdf %>%
+# bar chart barchart <-
+attend_plot_comb <- function(plotdf) {
 
+# build bar plot
+  barplot <-
+    plotdf %>%
+    arrange(desc(capacity_pct_team)) %>%
+    mutate(team_name = fct_reorder(team_name, capacity_pct_team)) %>%
+    ggplot(aes(capacity_pct_team, team_name)) +
+    geom_col(fill = "#8DA0CB") +
+    geom_text(aes(capacity_pct_team, team_name,
+                  label = scales::percent(round(capacity_pct_team, digits = 4), accuracy = 0.1)),
+              hjust = 1.1,
+              colour = "white") +
+    scale_y_discrete(labels= function(x) highlight(x, "League Average", "black")) +
+    scale_x_continuous(limits = c(0,1),
+                       expand = expansion(mult = c(0, 0.01)),
+                       labels = scales::percent_format()) +
+    labs(x = "", y = "") +
+    theme_minimal() +
+    theme(panel.grid = element_blank(),
+          plot.subtitle = ggtext::element_markdown(size = 10),
+          plot.caption = ggtext::element_markdown(),
+          axis.text.y = ggtext::element_markdown(size = 11))
 
+# build bubble plot
+  bubbleplot <-
+    plotdf %>%
+    arrange(desc(capacity_pct_team)) %>%
+    mutate(team_name = fct_reorder(team_name, capacity_pct_team)) %>%
+    ggplot(aes(stadium_capacity, capacity_pct_team)) +
+    # points for avg attendance & capacity
+    geom_point(aes(x=stadium_capacity, y= reorder(team_name, capacity_pct_team)),
+               color="#1F78B4", size=15, alpha = .5 ) +
+    geom_point(aes(x=attend_avg_team, y= reorder(team_name, capacity_pct_team)),
+               color="#FF7F00", size=15, alpha = .5 ) +
+    geom_text(aes(x = attend_avg_team, y= reorder(team_name, capacity_pct_team),
+                  label = format(round(attend_avg_team, digits = 0),big.mark=",",scientific=FALSE)),
+              color = "black", size = 3.5) +
+    geom_text(aes(x = stadium_capacity, y= reorder(team_name, capacity_pct_team),
+                  label = format(round(stadium_capacity, digits = 0),big.mark=",",scientific=FALSE)),
+              color = "black", size = 3.5) +
+    # line connecting the points.
+    geom_segment(aes(x=attend_avg_team + 1100 , xend=stadium_capacity - 1100,
+                     y=team_name, yend=team_name), color="lightgrey") +
+    scale_x_continuous(limits = c(0, max(plotdf$stadium_capacity + 500)),
+                       expand = expansion(mult = c(0, 0.01)),
+                       breaks = scales::pretty_breaks(6),
+                       labels = scales::comma_format(big.mark = ',')) +
+    labs(x = "", y = "",
+         # subtitle = "*The further the orange dot (avg attendance) is to the left of the blue dot (stadium capacity),
+         # the more average attendance is less than stadium capacity.*",
+         caption = "*Match attendance data from FBRef using worldfootballr package. Stadium capacity data from Wikipedia*") +
+    theme_minimal() +
+    theme(panel.grid = element_blank(),
+          axis.text.y=element_blank(),
+          plot.subtitle = ggtext::element_markdown(size = 10, hjust = 1),
+          plot.caption = ggtext::element_markdown())
 
+barplot + bubbleplot +
+  plot_layout(widths = c(1.25, 2.25))
 }
 
 
@@ -138,7 +193,7 @@ attend_plot1 <- function(plotdf) {
 }
 
 ## plotting function as above but set up for plotly interactivity
-attend_plot1 <- function(plotdf) {
+attend_plot1_pl <- function(plotdf) {
   plotdf %>%
     ggplot(aes(stadium_capacity, reorder(team_name, stadium_capacity))) +
     # points for avg attendance & capacity
@@ -256,9 +311,6 @@ attend_plot1_i <- function(plotdf) {
           axis.text.x = ggtext::element_markdown(size = 10),
           axis.text.y = ggtext::element_markdown(size = 11))
 }
-
-
-
 
 attend_scatter <- function(plotdf) {
   plotdf %>%

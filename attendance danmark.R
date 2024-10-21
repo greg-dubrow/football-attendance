@@ -7,6 +7,7 @@ library(janitor)
 library(ggtext)
 library(ggrepel)
 library(glue)
+library(patchwork)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
@@ -151,20 +152,24 @@ write_csv(superligadk_att_23_sum, file = "superligadk_att_23_sum.csv")
 
 # plot using plotting df
 # run function
-superligadk_attplot <- attend_plot1(superligadk_att_23_sum)
+superligadk_attplot <- attend_plot_comb(superligadk_att_23_sum)
 superligadk_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 superligadk_attplot +
-	geom_text(data = superligadk_att_23_sum %>% filter(stadium_capacity == capacity_max_league),
-						aes(x = stadium_capacity - 16000, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .04)) +
-	labs(
-		title = glue::glue("<b>Danish Superliga <span style='color: #FF7F00;'>Average attendance</span>,
-	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
+  plot_annotation(title = "<b> Danish Superliga
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
 				Superliga overall at about 2/3 capacity, only Midtjylland & FC København above 70% capacity.
-											 Many clubs have standing spaces included in capacity figure."))
+        Unlike some other small leagues, not much variance between the top and bottom capacity percentages.<br>
+        Many clubs have standing spaces included in capacity figure.",
+theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
 ggsave("images/plot_attendance_23_superligadk.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)

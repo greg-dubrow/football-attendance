@@ -1,4 +1,4 @@
-# denmark attendance figures...
+# portugal attendance figures...
 library(tidyverse)
 library(tidylog)
 library(janitor)
@@ -7,6 +7,7 @@ library(janitor)
 library(ggtext)
 library(ggrepel)
 library(glue)
+library(patchwork)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
@@ -76,19 +77,22 @@ glimpse(por_att_23_sum)
 
 # plot using plotting df
 # run function
-por_attplot <- attend_plot1(por_att_23_sum)
+por_attplot <- attend_plot_comb(por_att_23_sum)
 por_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 por_attplot +
-  geom_text(data = por_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "Benfica"),
-            aes(x = stadium_capacity - 35000, y = team_name,
-                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-                hjust = -1)) +
-  labs(
-		title = glue::glue("<b>Portugese Primeira Liga <span style='color: #FF7F00;'>Average attendance</span>,
-	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
-				Portugese clubs overall at about 60% capacity, only two teams above 80%."))
+  plot_annotation(title = "<b>Portugese Primeira Liga
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
+				Portugese clubs overall at about 60% capacity, only two teams above 80% and a number of clubs below 40%.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
 ggsave("images/plot_attendance_23_portugal.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)

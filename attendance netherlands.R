@@ -1,4 +1,4 @@
-# denmark attendance figures...
+# netherlands attendance figures...
 library(tidyverse)
 library(tidylog)
 library(janitor)
@@ -7,6 +7,7 @@ library(janitor)
 library(ggtext)
 library(ggrepel)
 library(glue)
+library(patchwork)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
@@ -71,24 +72,24 @@ glimpse(ned_att_23_sum)
 
 # plot using plotting df
 # run function
-ned_attplot <- attend_plot1(ned_att_23_sum)
+ned_attplot <- attend_plot_comb(ned_att_23_sum)
 ned_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 ned_attplot +
-  geom_text(data = ned_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "Ajax"),
-            aes(x = stadium_capacity - 23000, y = team_name,
-                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-                hjust = -1)) +
-  geom_text(data = ned_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "Feyenoord"),
-            aes(x = stadium_capacity - 30000, y = team_name,
-                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-                hjust = -1)) +
-  labs(
-		title = glue::glue("<b>Dutch Eredivisie <span style='color: #FF7F00;'>Average attendance</span>,
-	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
-				Dutch clubs overall at about 88% capacity, with many above 90% and only a few below 70%. <br>
-		                   Groningen total includes 3 match behind closed doors, thus 0 attendance."))
+  plot_annotation(title = "<b>Dutch Eredivisie
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
+				Dutch clubs overall have lots of demand for tickets - league average is 88% capacity, with many clubs above 90% and only a few below 70%. <br>
+		    Groningen total includes 3 match behind closed doors, thus 0 attendance.
+        See scatterplot below for stadium capacity numbers obscured by overlapping bubbles.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
 ggsave("images/plot_attendance_23_eredivisie.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)

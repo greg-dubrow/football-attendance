@@ -94,7 +94,7 @@ The plan here is:
 
 I'll show code along the way where it makes sense. If you're more interested in the results than the process, use the table of contents to the right to skip ahead to the charts. Code is mostly folded up, to see it click where it reads "Show code for (process)". If you want to see all of the code, head over to the [github repo](https://github.com/greg-dubrow/football-attendance).
 
-## Executive Summary
+## Summary
 
 Yes, it's a bit of a long post, so here are the highlights:
 
@@ -189,7 +189,7 @@ Now that we have the stadium data we'll get the FBRef data via `worldfootballR` 
 
 Repeat for all other countries.
 
-As I mentioned, the join step necessitated lots of data cleaning on stadium names, which took some detective work. I needed to track down stadium names free of current naming rights holders, and change FBRef's use of shorthand team names. We'll look at Germany for an example.
+As I mentioned, the join step necessitated lots of data cleaning on stadium names, which took some detective work. I needed to track down stadium names free of current naming rights holders, and change FBRef's use of shorthand team names. We'll look at Germany for an example. If you want to see how I handled other leagues, look at the individual scripts in the [Github repo](https://github.com/greg-dubrow/football-attendance).
 
 ```{r joindata}
 #| warning: false
@@ -623,18 +623,12 @@ Once Messi made his debut, attendance at Inter Miami matches home and away, whet
 What about the other European leagues, those in Belgium, Denmark, the Netherlands, Portugal, Sweden, and Switzerland?
 <br><br>
 
-```{=html}
-<iframe width="800" height="800" src="images/plot_attendance_23_belgium_i.html"></iframe>
-```
 
 ::: {.panel-tabset}
 
 ## Belgium
 
-![](images/plot_attendance_23_belgium.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
-
-![](images/plot_attendance_23_belgium_i.html)
-
+![](images/plot_attendance_23_belgium.jpg){fig-alt="bar chart on the left and connected dot plot on the right showing average attendance and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
 
 ![](images/plot_att_scatter_23_belgium.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2023-23 season"}
 
@@ -688,3 +682,5 @@ The plot below shows that teams with something real on the line, either the leag
 ## What does it all mean?
 
 Again, MLS has relatively good demand for live matches. League-wide more than 85% of tickets are taken. Whatever one thinks of the quality of play, that too many teams make the playoffs, that perhaps there's too many teams, that there should be promotion-relegation, and other 
+
+What else to explore? In addtion to tracking the numbers season-to-season, I would like to look a bit more closely at league position and ticket demand; what teams bring crowds in spite of league position, what teams are most affected? I would love to look at the relationship between ticket prices and demand, but price data is not easy to find, especially across all these leagues. Even just looking at 2 or 3 leagues would entail a lot of work. 

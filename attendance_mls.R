@@ -2,15 +2,19 @@
 library(tidyverse)
 library(tidylog)
 library(janitor)
-library(glue)
+
+# load if needed
 library(ggtext)
 library(ggrepel)
+library(glue)
+library(patchwork)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
 
 # functions for summary df and plots
 source("attend_functions.R")
+
 
 # load attendance data
 mls_match_2023 <- readRDS("~/Data/r/football data projects/data/euro_mls_match_2023.rds") %>%

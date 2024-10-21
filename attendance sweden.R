@@ -7,6 +7,7 @@ library(janitor)
 library(ggtext)
 library(ggrepel)
 library(glue)
+library(patchwork)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
@@ -60,20 +61,24 @@ glimpse(swe_att_23_sum)
 
 # plot using plotting df
 # run function
-swe_attplot <- attend_plot1(swe_att_23_sum)
+swe_attplot <- attend_plot_comb(swe_att_23_sum)
 swe_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 swe_attplot +
-  geom_text(data = swe_att_23_sum %>% filter(stadium_capacity == capacity_max_league & team_name == "AIK Stockholm"),
-            aes(x = stadium_capacity - 46000, y = team_name,
-                label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-                hjust = -1)) +
-  labs(
-		title = glue::glue("<b>Swedish Allsvenskan <span style='color: #FF7F00;'>Average attendance</span>,
-	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
+  plot_annotation(title = "<b>Swedish Allsvenskan
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
 				Swedish clubs overall at about 64% capacity, with a wide variance in average capacity. Malmö & Göteborg are the only clubs above 80%. <br>
-		                   Djurgårdens IF & Hammarby both play in Tele2 Arena."))
+		                   Djurgårdens IF & Hammarby both play at Tele2 Arena.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
+
 
 ggsave("images/plot_attendance_23_swe.jpg", width = 15, height = 8,
 			 units = "in", dpi = 300)
