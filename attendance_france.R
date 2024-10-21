@@ -5,6 +5,7 @@ library(janitor)
 library(glue)
 library(ggtext)
 library(ggrepel)
+library(patchwork)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
@@ -105,6 +106,9 @@ glimpse(ligue1_att_23)
 
 saveRDS(ligue1_att_23, file = "~/Data/r/football data projects/data/att_2023_ligue1.rds")
 
+ligue1_att_23 <- readRDS("~/Data/r/football data projects/data/att_2023_ligue1.rds")
+
+
 # top line stats for league
 ligue1_att_23 %>%
 	summarise(matches_tot = n(),
@@ -126,20 +130,31 @@ fra_att_23_sum %>%
 	select(stadium_name, team_name, stadium_capacity, attend_avg_team) %>%
 	view()
 
-ligue1_attplot <- attend_plot1(ligue1_att_23_sum)
+ligue1_attplot <- attend_plot_comb(ligue1_att_23_sum)
 ligue1_attplot
 
 # league plot - adjust max geom_text (DATA SET), title (LEAGUE)
 ligue1_attplot +
-	geom_text(data = ligue1_att_23_sum %>% filter(stadium_capacity == capacity_max_league),
-						aes(x = stadium_capacity - 17000, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .2)) +
-	labs(
-		title = glue::glue("<b>Ligue 1 <span style='color: #FF7F00;'>Average attendance</span>,
-		<span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.<br>
-		There is a lot of variance in demand for tickets relative to stadium capacity in Ligue 1.
-			Some clubs are well above 90% capacity, some play to less-than half full houses."))
+  plot_annotation(title = "<b>Ligue 1
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
+				There is a lot of variance in demand for tickets relative to stadium capacity in Ligue 1.
+			Some clubs are well above 90% capacity, some play to less-than half full houses.<br>
+      See scatterplot below for stadium capacity numbers obscured by overlapping bubbles.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
-ggsave("plot_attendance_23_ligue1.jpg", width = 14, height = 8,
+
+ggsave("images/plot_attendance_23_ligue1.jpg", width = 14, height = 8,
 			 units = "in", dpi = 300)
+
+ligue1_scatter <- attend_scatter(ligue1_att_23_sum)
+ligue1_scatter
+
+ggsave("images/plot_att_scatter_23_ligue1.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)

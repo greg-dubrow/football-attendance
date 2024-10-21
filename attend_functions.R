@@ -314,14 +314,19 @@ attend_plot1_i <- function(plotdf) {
 
 attend_scatter <- function(plotdf) {
   plotdf %>%
-  ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
-  geom_point() +
-  geom_smooth() +
-  geom_text_repel(aes(label = team_name)) +
-  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
-  scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
-  labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
-  theme_minimal()
+    ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
+    geom_point() +
+    geom_smooth() +
+    geom_text_repel(data = plotdf %>% filter(!team_name == "League Average"),
+                    aes(label = team_name)) +
+    geom_text_repel(data = plotdf %>% filter(team_name == "League Average"),
+                    aes(label = team_name), fontface = "bold") +
+    scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+    scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
+    labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
+    theme_minimal() +
+    theme(panel.border = element_rect(
+      color = 'grey', fill = NA, size = 1))
 }
 
 ## read in and rbind attendance files

@@ -5,6 +5,7 @@ library(janitor)
 library(glue)
 library(ggtext)
 library(ggrepel)
+library(patchwork)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
@@ -108,30 +109,38 @@ glimpse(epl_att_23_sum)
 
 # plot using plotting df
 # run function
-epl_attplot <- attend_plot1(epl_att_23_sum)
+epl_attplot <- attend_plot_comb(epl_att_23_sum)
 epl_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 epl_attplot +
-	geom_text(data = epl_att_23_sum %>% filter(stadium_capacity == capacity_max_league),
-						aes(x = stadium_capacity - 17000, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .04)) +
-	labs(
-		title = glue::glue("<b>Premier League <span style='color: #FF7F00;'>Average attendance</span>,
-	 		  <span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
-				All Premier League clubs were over 90% capacity, and all but two, Bournemouth and Southhampton,
-									 filled more than 95% of seats."))
+  plot_annotation(title = "<b>English Premier League
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
+		All Premier League clubs were over 90% capacity, and all but two, Bournemouth and Southhampton,
+    filled more than 95% of seats.<br>
+    See scatterplot below for stadium capacity numbers obscured by overlapping bubbles.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
 ggsave("images/plot_attendance_23_epl.jpg", width = 14, height = 8,
 			 units = "in", dpi = 300)
 
+epl_scatter <- attend_scatter(epl_att_23_sum)
+epl_scatter
 
-epl_att_23_sum %>%
-	ggplot(aes(stadium_capacity, capacity_pct_team)) +
-	geom_point() +
-	geom_smooth() +
-	geom_label_repel(aes(label = team_name))
+ggsave("images/plot_att_scatter_23_epl.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
+
+
+
+
+
 
 # for df of points by calendar week
 glimpse(epl_att23)

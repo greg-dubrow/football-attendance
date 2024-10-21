@@ -1,0 +1,36 @@
+---
+title: "Pithy title here"
+description: "football attendance"
+author: "gregers kjerulf dubrow"
+date: '2024-10-15'
+categories: [post, rstats, ggplot, football]
+image: "bike_dragor.jpeg"
+toc: true
+lightbox: true
+editor: 
+  mode: source
+---
+
+MLS, La Liga...anything else?
+
+## The Messi effect
+
+TAKE THIS OUT FOR A STANDALONE MLS POST COMPARING LAST TWO SEASONS
+
+A brief note on the effect of Lionel Messi signing for MLS side Inter Miami. Long rumoured, it finally happened after the conclusion of his European club season with Paris Saint Germain. Even though he first appeared during the MLS/Liga MX Leagues Cup competition, data for those matches aren't on FBRef and since those were not regular league matches anyway, we'll ignore them here. 
+
+Messi made his MLS league debut on August 26, 2023 and in total played in 6 matches, starting 4 and subbing on in the other two. There was of course a lot of hype around his appearances. Inter Miami raised ticket prices for home matches, as did clubs they visited. Inter Miami away matches at Atlanta, Charlotte, and Chicago saw the home team increase capacity to accommodate demand. Messi did not play in the match at Chicago, causing some anger among fans who paid a premium expecting to see him.
+
+(capacity chart)
+
+Once Messi made his debut, attendance at Inter Miami matches home and away, whether or not he was avaialable to play, were larger than before he joined.
+
+(attendance chart)
+
+## MLS over the course of the season
+
+Lull in mid-summer?
+
+# La Liga
+
+Match day and time. Do the Friday or Monday night kickoffs impact attendance? Or could it be that the teams lower in the table tend to play those nights, and the top teams get saturday or sunday at 9p

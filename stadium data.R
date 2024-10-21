@@ -590,7 +590,6 @@ saveRDS(bel_stad_df, file = "~/Data/r/football data projects/data/stadiums_bel.r
 
 
 # switzerland
-
 sui_url <- "https://en.wikipedia.org/wiki/List_of_football_stadiums_in_Switzerland"
 
 sui_url_bow <- polite::bow(sui_url)
@@ -615,4 +614,31 @@ sui_stad_df %>%
   view()
 
 saveRDS(sui_stad_df, file = "~/Data/r/football data projects/data/stadiums_sui.rds")
+
+# scotland
+sco_url <- "https://en.wikipedia.org/wiki/List_of_football_stadiums_in_Scotland"
+
+sco_url_bow <- polite::bow(sco_url)
+sco_url_bow
+
+sco_stad_html <-
+  polite::scrape(sco_url_bow) %>%  # scrape web page
+  rvest::html_nodes("table.wikitable.sortable") %>% # pull out specific table
+  rvest::html_table(fill = TRUE)
+
+sco_stad_df <-
+  sco_stad_html[[1]] %>%
+  clean_names() %>%
+  mutate(capacity = str_split(capacity, "\\[", simplify=T)[,1]) %>%
+  mutate(capacity = as.numeric(gsub(",", "", as.character(capacity)))) %>%
+  select(stadium = stadium_notes_1, city = city_town, capacity, team)
+
+glimpse(sco_stad_df)
+
+sco_stad_df %>%
+  count(city) %>%
+  view()
+
+saveRDS(sco_stad_df, file = "~/Data/r/football data projects/data/stadiums_sco.rds")
+
 

@@ -6,6 +6,7 @@ library(glue)
 library(ggtext)
 library(ggrepel)
 library(gt)
+library(ggiraph)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
@@ -21,6 +22,21 @@ glimpse(attdfs)
 attdfs %>%
   count(league)
 
+att23avgall <- attdfs %>%
+  add_row(tibble_row(league = "Average all leagues")) %>%
+  mutate(attend_tot_league = sum(match_attendance, na.rm = TRUE)) %>%
+  mutate(capacity_tot_league = sum(capacity, na.rm = TRUE)) %>%
+  mutate(capacity_pct_league = attend_tot_league / capacity_tot_league) %>%
+  mutate(attend_avg_league = round(mean(match_attendance, na.rm = TRUE), 0)) %>%
+  mutate(capacity_avg_league = round(mean(capacity, na.rm = TRUE), 0)) %>%
+  filter(league == "Average all leagues") %>%
+  add_column(attend_min_league = NA) %>%
+  add_column(attend_max_league = NA) %>%
+  add_column(capacity_min_league = NA) %>%
+  add_column(capacity_max_league = NA) %>%
+  select(league, attend_avg_league, attend_min_league, attend_max_league,
+         capacity_avg_league, capacity_min_league, capacity_max_league, capacity_pct_league)
+
 att23_all <-
   attdfs %>%
 	mutate(league = ifelse(league == "Fußball-Bundesliga", "Bundesliga", league)) %>%
@@ -34,9 +50,14 @@ att23_all <-
 						capacity_max_league = max(capacity),
 						capacity_sum_league = sum(capacity),
 						capacity_pct_league = attend_sum_league / capacity_sum_league) %>%
+  ungroup() %>%
 	select(league, attend_avg_league, attend_min_league, attend_max_league,
 				 capacity_avg_league, capacity_min_league, capacity_max_league,
-				 capacity_pct_league)
+				 capacity_pct_league) %>%
+  rbind(att23avgall)
+
+
+glimpse(att23avgall)
 
 glimpse(att23_all)
 
@@ -59,6 +80,11 @@ att23_all %>%
 		style = cell_text(align = "center"),
 		locations = cells_column_labels(
 			columns = c(attend_avg_league, capacity_avg_league, capacity_pct_league))) %>%
+  tab_style(
+    style = list(cell_text(weight = "bold")),
+    locations = cells_body(
+      columns = c(league, attend_avg_league, capacity_avg_league, capacity_pct_league),
+      rows = league == "Average all leagues")) %>%
   opt_interactive(use_sorting = TRUE)
 
 attendall_gt |> gtsave("images/attendall_gt.png")

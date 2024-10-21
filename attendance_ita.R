@@ -117,15 +117,3 @@ seriea_scatter
 ggsave("images/plot_att_scatter_23_seriea.jpg", width = 15, height = 8,
        units = "in", dpi = 300)
 
-seriea_att_23_sum %>%
-ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
-  geom_point() +
-  geom_smooth() +
-  geom_text_repel(data = seriea_att_23_sum %>% filter(!team_name == "League Average"),
-    aes(label = team_name)) +
-  geom_text_repel(data = seriea_att_23_sum %>% filter(team_name == "League Average"),
-                  aes(label = team_name), fontface = "bold") +
-  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
-  scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
-  labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
-  theme_minimal()

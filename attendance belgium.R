@@ -99,10 +99,6 @@ ggsave("images/plot_att_scatter_23_belgium.jpg", width = 15, height = 8,
        units = "in", dpi = 300)
 
 
-
-
-
-
 ## old or test code not used, but save for future reference
 
 # # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!

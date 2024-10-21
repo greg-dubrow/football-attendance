@@ -5,6 +5,7 @@ library(janitor)
 library(ggtext)
 library(ggrepel)
 library(glue)
+library(patchwork)
 
 source("~/Data/r/basic functions.R")
 options(scipen=10000)
@@ -95,29 +96,25 @@ laliga_att_23_sum <- laliga_att_23_sum %>%
 
 # plot using plotting df
 # run function
-laliga_attplot <- attend_plot1(laliga_att_23_sum)
+laliga_attplot <- attend_plot_comb(laliga_att_23_sum)
 laliga_attplot
 
 # add title after reviewing plot for story highlights. CHANGE LEAGUE NAME!!
 laliga_attplot +
-	geom_text(data = laliga_att_23_sum %>% filter(stadium_capacity == capacity_max_league),
-						aes(x = attend_avg_team - 20000, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .2)) +
-	annotate(geom = "richtext",
-					 label = "*Reduced stadium capacity due to construction.*",
-					 x = 37500, y = "Real Madrid", fill = NA, label.color = NA, size = 4) +
-	annotate(geom = "richtext",
-					 label = "*Reduced stadium capacity due to construction.*",
-					 x = 60000, y = "Celta Vigo", fill = NA, label.color = NA, size = 4) +
-	annotate(geom = "richtext",
-					 label = "*Some matches at Estadi Ciutat de València due to construction at La Cerámica.*",
-					 x = 72000, y = "Villareal - Valencia", fill = NA, label.color = NA, size = 4) +
-	labs(
-		title = glue::glue("<b>La Liga <span style='color: #FF7F00;'>Average attendance</span>,
-		<span style='color: #1F78B4;'>Stadium capacity</span></b>, and<b> avg pct capacity for season</b>, by club, 2022-23 season.</b><br>
-		In La Liga there is lots of variance in the percentage of tickets sold/given away on match days.
-		The more successful clubs are above 80% capacity, while less successful clubs are mostly between 50% - 70% full."))
+  plot_annotation(title = "<b>La Liga
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
+		In La Liga there is a fair amount of variance in the percentage capacity numbers. The more successful clubs
+    are above 80% capacity, while less successful clubs are mostly between 50% - 70% full.<br>
+    Real Madrid & Celta Viga had reduced stadium capacity due to construction.
+    Villareal played ome matches at Estadi Ciutat de València due to construction at La Cerámica.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
 ggsave("plot_attendance_23_laliga.jpg", width = 14, height = 8,
 			 units = "in", dpi = 300)

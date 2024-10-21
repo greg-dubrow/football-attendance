@@ -53,8 +53,13 @@ att23_all <- readRDS("~/Data/r/football data projects/data/att23_all.rds")
 
 ```
 
-## Preamble
+## Meta Preamble
+
+This was supposed to be just a chart and table or two. 
+
 evolution of project
+lots of chart iterations. but the way i tend to work is, ven with a design phase where i sketch out charts, i often don't know exactly what i want as the final product until i've protoyped and iterated.
+
 trust instincts of your visualization isn't telling the story you are hoping you're telling
 
 a slightly longer post than i planned on...one of those projects that started as a simple idea to compare league averages on percent of stadium capacity that grew into looking at the club level...use the table of contents to skip to the things you want to see.
@@ -63,8 +68,6 @@ tried to do interactive charts but couldn't get the html widgets to load nicely 
 
 
 ## Introduction {#intro}
-
-
 
 Reading a post on a football blog comparing average attendances across leagues in Europe with Major League Soccer (MLS) in the US, I thought that the analysis needed a bit more than averages. Looking at stadium capacity raised more interesting questions, including:
 
@@ -76,9 +79,11 @@ To do the analysis I needed match attendance and stadium capacity. Match attenda
 
 It's worth noting a big caveat about attendance figures; in the US it's generally reported as tickets accounted for (sold, given away, etc), not the turnstile count. Most Premier League clubs also use that method. I'm not sure how attendance is counted in other leagues. So if you wonder why your favorite team shows a higher average capacity than the eyeball test of vacant seats, that's why.
 
-It's also worth noting that the FBRef data may not be 100% accurate. In putting together the France data for instance, I noticed that some stadiums listed as venues were incorrect. For Denmark they transposed the 2nd stage groups, champinship and relegation. In each case I let them know and they say they are correcting the problem matches. I only spotted those errors, though, because I know the leagues well enough having lived in France for a bit and living now in Denmark. 
+It's also worth noting that the FBRef data may not be 100% accurate. In putting together the France data for instance, I noticed that some stadiums listed as venues were incorrect. For Denmark they transposed the 2nd stage groups, champinship and relegation. In each case I let them know and they say they are correcting the problem matches. I only spotted those errors, though, because I know the leagues well enough having lived in France for a bit and living now in Denmark.
 
-Another data challenge was inconsistent naming of stadiums between FBRef and Wikipedia. I could only fix the names after doing the initial join, seeing what didn't match, and correcting from there.
+The stadium data from wikipedia also needed edits, as stadium capacity can flucturate, especially for stadiums undergoing renovation. I knew of a few reduced capacities (e.g. at Real Madrid in 2022-23) but I 'm sure I missed some in other leagues. If you see any issues there, let me know. 
+
+Another data challenge was inconsistent naming of stadiums between FBRef and Wikipedia. I could only fix the names after doing the initial join, seeing what didn't match, and correcting from there. Thanks to naming rights deals, stadium names can change. In general I defaulted to the traditional name of the stadium rather than the current sponsored name, for example the Borussia Dortmund stadium is currently *Signal Iduna Park* but I've standardized the name to the original *Westfalenstadion*.
 
 ## Outline {#plan}
 
@@ -104,7 +109,7 @@ Yes, it's a bit of a long post, so here are the highlights:
 
 -   The top clubs in France, Italy, & Spain are around 80%-90% capacity but many clubs struggle to reach even 70% capacity. 
 
--  In the smaller leagues, there is generally lower capacity, but much more variance between clubs.
+-  In the smaller leagues, there is generally lower average capacity, but much more variance between clubs. Some clubs are above 80%, some below 50%.
 
 -   Overall then, demand for MLS tickets compares favorably with European leagues. It's not as strong league-wide as the Premier League or Bundesliga, but it's close. And MLS does better on average than the other major European leagues.
 
@@ -515,6 +520,11 @@ att23_all %>%
 		style = cell_text(align = "center"),
 		locations = cells_column_labels(
 			columns = c(attend_avg_league, capacity_avg_league, capacity_pct_league))) %>%
+    tab_style(
+    style = list(cell_text(weight = "bold")),
+    locations = cells_body(
+      columns = c(league, attend_avg_league, capacity_avg_league, capacity_pct_league),
+      rows = league == "Average all leagues")) %>%
   # function to make table sortable
   opt_interactive(use_sorting = TRUE,
                   use_pagination = FALSE,
@@ -544,7 +554,15 @@ Notes:
 
 ## England
 
-![](images/plot_attendance_23_epl.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in bundesliga 2023-23 season"}
+You might look at the bubble chart on the right and wonder why I left it in given that you can't distinguish the blue stadium capacity bubbles from the orange average attendance bubbles.
+
+Well, as the bar chart on the left shows, the demand and thus the overlap is the story. Demand for EPL tickets is so high, that there's no daylight between how many people EPL stadiums can hold and the average number of people turning up on match day.
+
+![](images/plot_attendance_23_epl.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in English Premier League 2023-23 season"}
+
+And same with the scatterplot. Why not set the y-axis to like a 50%-100% range? Well again, the story is the high demand, meaning all clubs are in the narrow 90%+ range, many above 95%.
+
+![](images/plot_att_scatter_23_epl.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in English Premier League 2022-23 season"}
 
 ## France
 
@@ -552,7 +570,7 @@ First we run the data thru the summary function to create the set used for plott
 `attend_sum(att_2023_ligue1, "fra_att_23")`
 
 
-Now let's make a plot! Again, as we have a function going most of the work, there's not much code. First we run the plot function. After looking at the basic plot, decide where to put the capacity text for the team with the largest stadium and decide on a title that describes the insight from the visualization. 
+Now let's make a plot! Again, as we have a function going most of the work, there's not much code. First we run the plot function. After looking at the basic plot, decide where to put the capacity text for the team with the largest stadium and decide on a title (via `patchwork`'s `plot_annotation()` call) that describes the insight from the visualization. 
 
 ```{r franceplot}
 #| fig.width: 14.0
@@ -571,29 +589,39 @@ fra_attplot <- attend_plot1(fra_att_23_sum)
 
 # final plot - adjust max geom_text (DATA SET), title (LEAGUE)
 fra_attplot +
-	geom_text(data = fra_att_23_sum %>% filter(stadium_capacity == capacity_max_league),
-						aes(x = stadium_capacity - 15000, y = team_name,
-								label = paste0("Pct of capacity for season = ", round(capacity_pct_team * 100, 1), "%"),
-								hjust = .35)) +
-	labs(
-		title = glue::glue("<b>Ligue 1 <span style='color: #A74E79;'>Average attendance</span>,
-		<span style='color: #4E79A7;'>Stadium capacity </span></b>and<b> avg pct capacity for season</b>, by club, 2022-23 season.<br> There is a lot of variance in demand for tickets relative to stadium capacity in Ligue 1.
-			Some clubs are well above 90% capacity, some play to less-than half full houses."))
+  plot_annotation(title = "<b>Ligue 1
+  <span style='color: #8DA0CB;'>Average percent of capacity for season</span></b><i> (left bar chart)</i>,
+  <b><span style='color: #FF7F00;'>Average attendance</span></b> and
+  <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
+				There is a lot of variance in demand for tickets relative to stadium capacity in Ligue 1.
+			Some clubs are well above 90% capacity, some play to less-than half full houses.<br>
+      See scatterplot below for stadium capacity numbers obscured by overlapping bubbles.",
+                  theme = theme(plot.title =
+                                  ggtext::element_textbox_simple(
+                                    size = 12, fill = "cornsilk",
+                                    lineheight = 1.5,
+                                    padding = margin(5.5, 5.5, 5.5, 2),
+                                    margin = margin(0, 0, 5.5, 0))))
 
 ```
 
-![](images/plot_attendance_23_ligue1.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in ligue1 2022-23 season"}
+![](images/plot_attendance_23_ligue1.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Ligue 1 2022-23 season"}
+![](images/plot_att_scatter_23_ligue1.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Ligue 1 2022-23 season"}
 
 
 ## Germany
 
-![](images/plot_attendance_23_bundes.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in bundesliga 2022-23 season"}
+![](images/plot_attendance_23_bundes.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Bundesliga 2022-23 season"}
+
+
+![](images/plot_att_scatter_23_bundes.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Bundesliga 2022-23 season"}
 
 
 ## Italy
 
 ![](images/plot_attendance_23_seriea.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in laliga 2022-23 season"}
 
+![](images/plot_att_scatter_23_seriea.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Serie A 2022-23 season"}
 
 ## Spain
 
@@ -612,18 +640,6 @@ So that's why this 2nd scatterplot to get a slightly more honest look at the rel
 ![](images/plot_att_scatter_23_mls2.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in MLS 2022-23 season"}
 
 :::
-
-## The Messi effect
-
-A brief note on the effect of Lionel Messi signing for MLS side Inter Miami. Long rumoured, it finally happened after the conclusion of his European club season with Paris Saint Germain. Even though he first appeared during the MLS/Liga MX Leagues Cup competition, data for those matches aren't on FBRef and since those were not regular league matches anyway, we'll ignore them here. 
-
-Messi made his MLS league debut on August 26, 2023 and in total played in 6 matches, starting 4 and subbing on in the other two. There was of course a lot of hype around his appearances. Inter Miami raised ticket prices for home matches, as did clubs they visited. Inter Miami away matches at Atlanta, Charlotte, and Chicago saw the home team increase capacity to accommodate demand. Messi did not play in the match at Chicago, causing some anger among fans who paid a premium expecting to see him.
-
-(capacity chart)
-
-Once Messi made his debut, attendance at Inter Miami matches home and away, whether or not he was avaialable to play, were larger than before he joined.
-
-(attendance chart)
 
 ## Club attendance figures for other European leagues
 
@@ -667,6 +683,14 @@ The plot below shows that teams with something real on the line, either the leag
 
 ![](images/plot_att_scatter_23_portugal.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Portugese Premiera 2022-23 season"}
 
+## Scotland
+
+![](images/plot_attendance_23_sco.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Scottish Premiership 2022-23 season"}
+
+
+![](images/plot_att_scatter_23_sco.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in the Scottish Premiership 2022-23 season"}
+
+
 ## Sweden
 
 ![](images/plot_attendance_23_swe.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swedish Allsvenskan 2022-23 season"}
@@ -690,4 +714,8 @@ The plot below shows that teams with something real on the line, either the leag
 
 Again, MLS has relatively good demand for live matches. League-wide more than 85% of tickets are taken. Whatever one thinks of the quality of play, that too many teams make the playoffs, that perhaps there's too many teams, that there should be promotion-relegation, and other 
 
-What else to explore? In addtion to tracking the numbers season-to-season, I would like to look a bit more closely at league position and ticket demand; what teams bring crowds in spite of league position, what teams are most affected? I would love to look at the relationship between ticket prices and demand, but price data is not easy to find, especially across all these leagues. Even just looking at 2 or 3 leagues would entail a lot of work. 
+It's also worth mentioning that the 2022-23 season was the first since 2018-19 to not be interrupted and/or disrupted by COVID. Stadiums were open to full crowds, and teams and leagues were reporting higher demand than the pre-COVID seasons. People were happy to be able to go out and do things again after partial or full lockdowns.
+
+What else to explore? In addition to tracking the numbers season-to-season, I would like to look a bit more closely at league position and ticket demand; what teams bring crowds in spite of league position, what teams are most affected? I would love to look at the relationship between ticket prices and demand, but price data is not easy to find, especially across all these leagues. Even just looking at 2 or 3 leagues would entail a lot of work. 
+
+I have started another post that will look at MLS a bit more, specifically if there was a "Messi effect" on attendance, and if there's a lull in mid-season attendance. A criticism of the MLS structure is that there are too many teams in general, and too many teams make the playoffs thus reducing the imact of individual matches.
