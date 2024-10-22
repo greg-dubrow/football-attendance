@@ -8,12 +8,10 @@
 data/*.rds
 images/
 *.html
-*.png
 *.rds
 data/*rds
 testpost_files/
 *.xlsx
-*.jpg
 analysis ideas.*
 ~/Data/r/football data projects/football_attendance/analysis ideas.txt
 ~/Data/r/football data projects/football_attendance/analysis ideas.*
