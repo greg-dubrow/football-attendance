@@ -107,21 +107,42 @@ att23_all %>%
   ggplot(aes(x = capacity_avg_league, y = capacity_pct_league)) +
     geom_point() +
     geom_smooth() +
-    geom_text_repel(aes(label = league)) +
-    scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
+  geom_text_repel(data = att23_all %>% filter(!league == "Average all leagues"),
+                  aes(label = league), size = 5) +
+  geom_text_repel(data = att23_all %>% filter(league == "Average all leagues"),
+                  aes(label = league), fontface = "bold", size = 5) +
+  scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
     scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
-    labs(x = "Stadium Capacity", y = "Avg % of Capacity") +
-    theme_minimal()
+    labs(x = "Average Stadium Capacity", y = "Avg % of Capacity") +
+  theme_minimal() +
+  theme(panel.border = element_rect(
+    color = 'grey', fill = NA, size = 1),
+    axis.title.x = element_text(size = 15),
+    axis.title.y = element_text(size = 15))
+
+ggsave("images/plot_attendance_23_all_scatter1.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
+
 
 att23_all %>%
   ggplot(aes(x = attend_avg_league, y = capacity_pct_league)) +
   geom_point() +
   geom_smooth() +
-  geom_text_repel(aes(label = league)) +
+  geom_text_repel(data = att23_all %>% filter(!league == "Average all leagues"),
+                  aes(label = league), size = 5) +
+  geom_text_repel(data = att23_all %>% filter(league == "Average all leagues"),
+                  aes(label = league), fontface = "bold", size = 5) +
   scale_x_continuous(labels = scales::comma_format(big.mark = ',')) +
   scale_y_continuous(limits = c(0,1), labels = scales::percent_format()) +
   labs(x = "Average Match Attendance", y = "Avg % of Capacity") +
-  theme_minimal()
+  theme_minimal() +
+  theme(panel.border = element_rect(
+    color = 'grey', fill = NA, size = 1),
+    axis.title.x = element_text(size = 15),
+    axis.title.y = element_text(size = 15))
+
+ggsave("images/plot_attendance_23_all_scatter2.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
 
 
 ## long way code

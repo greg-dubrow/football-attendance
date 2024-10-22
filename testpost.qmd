@@ -488,7 +488,14 @@ What does the table tell us?
 
 Premier League and Bundesliga are in very high demand, and Dutch Eredisie demand is not much further behind. And MLS is right up there, 4th highest in comparison to the major European leagues. 
 
-If you're a football tourist, tickets are easier to come by in Belgium, Portugal (Primeira Liga), Denmark (Superliga), and Sweden (Allsvenskan).
+The scatterplots below looking at percentage capacity (y axis) by overall stadium capacity and then average attendace show that a league's average stadium size or attendance doesn't mean those stadiums are above the average capacity percentage. 
+
+![](images/plot_attendance_23_all_scatter1.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by league for the 2022-23 season"}
+
+![](images/plot_attendance_23_all_scatter2.jpg){fig-alt="connected dot plot showing average percent capacity and average attendance by league for the  2022-23 season"}
+
+
+The bottom line is, if you're a football tourist and not fixated on a Premier League or Budnesliga match, tickets are easier to come by in Belgium, Portugal (Primeira Liga), Denmark (Superliga), and Sweden (Allsvenskan). The by-league charts below will show you which clubs in even the more in-demand leagues might offer you a better chance at getting a ticket.
 
 ::: {style="font-size: 75%;"}
 *table is sortable - click on column header*
