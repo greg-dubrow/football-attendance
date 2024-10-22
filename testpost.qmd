@@ -1,10 +1,10 @@
 ---
 title: "Pithy title here"
-description: "football attendance"
+description: "Examining football attendance data"
 author: "gregers kjerulf dubrow"
-date: '2024-10-22'
+date: '2024-10-23'
 categories: [post, rstats, ggplot, football]
-image: "bike_dragor.jpeg"
+image: "groupamastadium_nov2022.jpg"
 format: 
   html:
     link-external-newwindow: true
@@ -23,6 +23,7 @@ knitr::opts_chunk$set(
   out.width = "100%") 
 ```
 
+![An almost sold-out Groupama Stadium, Lyon v Nice, November 2022. Photo by author.](groupamastadium_nov2022.jpg){fig-align="left" fig-alt="wide angle shot from the upper deck of groupama stadium in lyon france, for a sold-out match featuring lyon v nice in november 2022."}
 
 ```{r dataload}
 #| warning: false
@@ -57,15 +58,17 @@ att23_all <- readRDS("~/Data/r/football data projects/data/att23_all.rds")
 ```
 
 
-## meta preamble
+### *meta preamble*
 
-This was supposed to be just a chart and table or two but ended up a longer post than planned. One of those projects that started as a simple idea to compare league averages on percent of stadium capacity that grew into looking at the club level. It's not necessarily something I feel strongly about, but once I started the project I wanted to see it though. As it happens, along the way I learned a few new coding tricks. But the most important lesson I learned, and the one that extended the creation timeline of the project, was about creating effective data visualizations. 
+This was supposed to be just a chart and table or two but ended up a longer post than planned. One of those projects that started as a simple idea to compare league averages on percent of stadium capacity that grew into looking at the club level. It's not something I feel strongly about or spend much time thinking about, but once I started the project I wanted to see it though. 
 
-The way I tend to work is, even with a design phase where I sketch out charts by hand, I often don't know exactly what I want as the final product until I've prototyped and iterated.
+As it happens, along the way I learned a few new coding tricks. But the most important lesson I learned, and the one that extended the creation timeline of the project, was about the role of trial and error in creating effective data visualizations. 
 
-For this project, the original by-club visualization I did was ok, but I realized it wasn't telling the story I set out to tell. You can see [an example here](https://github.com/greg-dubrow/football-attendance/blob/main/plot_attendance_23_bundes.jpg).
+The way I tend to work is, even with a design phase where I sketch out charts by hand, I often don't know exactly what I want as the final product until I've prototyped and iterated. I'm a visual and experiential learner.
 
-So despite doing these for every league, I went back to the drawing board to the version you see below. Then **twice** I realized the by-league and club scatterplots needed fine tuning after I'd run them all. 
+For this project, the original by-league-and-club visualization I did was ok, but I realized after I'd created almost all of them it wasn't telling the story I'd set out to tell. I was burying the lede on capacity, relegating it to secondary. You can see what I mean [in this example](https://github.com/greg-dubrow/football-attendance/blob/main/plot_attendance_23_bundes.jpg).
+
+So despite doing these for almost every league, I went back to the drawing board to the version you see below. Then **twice** I realized the by-league and club scatterplots needed fine tuning after I'd run them all. 
 
 <center> *sigh* </center>
 <br>
@@ -73,7 +76,7 @@ The moral of this data visualization story is trust your instincts if you think 
 
 Regarding coding tricks, I'm getting better at writing functions for anything from small operations to complicated charts. I also have a nice one to read in files from a directory, iterate over them to pull out just the columns I want, and `rbind` them together. Hooray for the efficiency of functional programming. 
 
-One thing I couldn't make work was getting interactive charts made with the `ggiraph` or `plotly` packages to load nicely as html widgets in Quarto. If anyone reading this has tips, let me know. 
+One thing I couldn't make work was getting interactive charts made with the `ggiraph` or `plotly` packages to load nicely as html widgets in Quarto. They weren't sizing up well on the page. If anyone reading this has tips, let me know. 
 
 And now, on with the show...
 
@@ -90,13 +93,17 @@ Also, as anyone who's performed on stage can tell you, it's better to play a roo
 
 Watch a European match at a sold-out ground, or an MLS match now from Portland, Philadelphia, Columbus, or any other smaller soccer-specific ground. Electric vibes. You want to be there and be part of a happening.
 
-To do the analysis I needed match attendance and stadium capacity. Match attendance comes from [FBRef](https://fbref.com/) via the `worldfootballR` package. Stadium data was scraped from from Wikipedia pages. I've pulled data for MLS and eleven 1st division leagues in Europe: the 5 major top flights in England, France, Germany, Italy & Spain; along with Belgium, Denmark (of course), Netherlands, Portugal, Scotland, Sweden, and Switzerland. Because Sweden, like MLS, runs a spring-fall schedule I'm using the 2022-23 season figures for better comparison, even though the 2023-24 season just ended in all other Euro leagues. I'd hoped to add football-mad Turkey but 90% of the matches did not have any attendance numbers listed on FBRef. 
+## The Data
+
+To do the analysis I needed match attendance and stadium capacity. Match attendance comes from [FBRef](https://fbref.com/) via the `worldfootballR` package. Stadium data was scraped from from Wikipedia pages. I've pulled data for MLS and eleven 1st division leagues in Europe: the 5 major top flights in England, France, Germany, Italy & Spain; along with Belgium, Denmark (of course), Netherlands, Portugal, Scotland, Sweden, and Switzerland. Attendance figures are only for league matches. Champions League & other UEFA tournaments, and league cup matches (e.g. FA Cup, Coppa Italia, etc) are not included. Promotion and relegation playoff matches are included if the home team is in the top-flight league.
+
+Because Sweden, like MLS, runs a spring-fall schedule I'm using the 2022-23 season figures for better comparison, even though the 2023-24 season just ended in all other Euro leagues. I'd hoped to add football-mad Turkey but 90% of the matches did not have any attendance numbers listed on FBRef. 
 
 It's worth noting a big caveat about attendance figures; in the US it's generally reported as tickets accounted for (sold, given away, etc), not the turnstile count. Most Premier League clubs also use that method. I'm not sure how attendance is counted in other leagues. So if you wonder why your favorite team shows a higher average capacity than the eyeball test of vacant seats, that's why.
 
-It's also worth noting that the FBRef data may not be 100% accurate. In putting together the France data for instance, I noticed that some stadiums listed as venues were incorrect. For Denmark they transposed the 2nd stage groups, champinship and relegation. In each case I let them know and they say they are correcting the problem matches. I only spotted those errors, though, because I know the leagues well enough having lived in France for a bit and living now in Denmark.
+It's also worth noting that the FBRef data may not be 100% accurate. In putting together the France data for instance, I noticed that some stadiums listed as venues were incorrect. For Denmark they transposed the 2nd stage groups, championship and relegation. In each case I let them know and they say they are correcting the problem matches. I only spotted those errors, though, because I know the leagues well enough having lived in France for a bit and living now in Denmark.
 
-The stadium data from Wikipedia also needed edits, as stadium capacity can flucturate, especially for stadiums undergoing renovation. I knew of a few reduced capacities (e.g. at Real Madrid in 2022-23) but I 'm sure I missed some in other leagues. If you see any issues there, let me know. 
+The stadium data from Wikipedia also needed edits, as stadium capacity can fluctuate, especially for stadiums undergoing renovation. I knew of a few reduced capacities (e.g. at Real Madrid in 2022-23) but I'm sure I missed some in other leagues. If you see any issues there, let me know. 
 
 Another data challenge was inconsistent naming of stadiums between FBRef and Wikipedia. I could only fix the names after doing the initial join, seeing what didn't match, and correcting from there. Thanks to naming rights deals, stadium names can change. In general I defaulted to the traditional name of the stadium rather than the current sponsored name, for example the Borussia Dortmund stadium is currently *Signal Iduna Park* but I've standardized the name to the original *Westfalenstadion*.
 
@@ -460,7 +467,7 @@ Before we get to the individual league plots I want to run a few tables to show 
 
 ## Average match capacity by league
 
-To do the table below I combined the individual league attendance files into a single dataframe. I created a function to read them in, select only the necessary columns and bind them. I post the function below in case you encounter a similar need...to read in a bunch of files, clean, and join them. All you need to do is change the file type and (if necessary) the regex for the filename pattern.
+To do the table below I combined the individual league attendance files into a single dataframe. I created a function to read them in, select only the necessary columns and bind them. I include the function below in case you encounter a similar need...to read in a bunch of files, clean, and join them. All you need to do is change the file type and the regex for the filename pattern.
 
 To run the function, it's one line of code:
 
@@ -504,9 +511,9 @@ combine_rds_files <- function(directory) {
 
 What does the table tell us? 
 
-Premier League and Bundesliga are in very high demand, and Dutch Eredisie demand is not much further behind. And MLS is right up there, 4th highest in comparison to the major European leagues. 
+Premier League and Bundesliga are in very high demand, and Dutch Eredivisie demand is not much further behind. And MLS is right up there, 4th highest in comparison to the major European leagues. 
 
-The scatterplots below the table display the percentage capacity (y axis) by overall stadium capacity and then average attendace. They show that except for the English Premier League and the Bundesliga, a larger average stadium size or attendance doesn't mean that a league's clubs are doing better at filling their grounds.  Scottish and Dutch clubs, along with MLS, have relatively smaller grounds on average, but they're well-matched to demand so they are playing to crods above 80% capacity.
+The scatterplots below the table display the percentage capacity (y axis) by overall stadium capacity and then average attendace. They show that except for the English Premier League and the Bundesliga, a larger average stadium size or attendance doesn't mean that a league's clubs are doing better at filling their grounds.  Scottish and Dutch clubs, along with MLS, have relatively smaller grounds on average, but they're well-matched to demand so they are playing to crowds above 80% capacity.
 
 The bottom line is, if you're a football tourist and not fixated on a Premier League or Budnesliga match, tickets are easier to come by in Belgium, Portugal (Primeira Liga), Denmark (Superliga), and Sweden (Allsvenskan). The by-league charts below will show you which clubs in even the more in-demand leagues might offer you a better chance at getting a ticket.
 
@@ -596,10 +603,10 @@ The stadium capacity story in France is that a couple of the top clubs, PSG and 
 
 As for the process of making and annotating the plot...
 
-First we run the data thru the summary function to create the set used for plotting. It's now this one line of code:
+First I run the data thru the summary function to create the set used for plotting. It's now this one line of code:
 `attend_sum(att_2023_ligue1, "fra_att_23")`
 
-After looking at the basic plot, decide where to put the capacity text for the team with the largest stadium and decide on a title (via `patchwork`'s `plot_annotation()` call) that describes the insight from the visualization. 
+After looking at the basic plot, I then decide on title text that describes the insight from the visualization and add it via `patchwork`'s `plot_annotation()` call. 
 
 ```{r franceplot}
 #| fig.width: 14.0
@@ -642,6 +649,8 @@ fra_attplot +
 
 ## Germany
 
+Demand for tickets in German is very strong. All but three teams are regularly playing to 90%+ full stadiums. The Bundesliga is a tough ticket. I mentioned in the intro the issues with Hertha, and why their the outlier here.
+
 ![](images/plot_attendance_23_bundes.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Bundesliga 2022-23 season"}
 
 
@@ -650,19 +659,31 @@ fra_attplot +
 
 ## Italy
 
+The top clubs in Italy are playing to almost full stadiums, but overall from what I've read many stadiums in Italy are older and run-down, so not the most inviting experience for the casual match-goer. Spezia is an example of a team where the size of the stadium accurately reflects demand...in this season it was the smallest in Serie A but was regularly 90% full in a season where they were relegated, finishing 18th.
+
 ![](images/plot_attendance_23_seriea.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in laliga 2022-23 season"}
 
 ![](images/plot_att_scatter_23_seriea.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Serie A 2022-23 season"}
 
 ## Spain
 
+While I'm not surprised that Real MAdrid and Rayo are playing at close to 90% capacity, I was surprised to see Athletic Club only at 80%. Seems whenever I watch them on television San Memes is full. Maybe there's an issue with the attendance or capacity numbers? Not surprised as well that Getafe, Cadiz & Espanyol were as low as they were. In another post I do want to see if these clubs are negatively impacted by playing often on Friday or Monday nights. 
 
-![](images/plot_attendance_23_laliga.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in laliga 2022-23 season"}
+![](images/plot_attendance_23_laliga.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in La Liga 2022-23 season"}
+
+![](images/plot_att_scatter_23_laliga.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in La Liga 2022-23 season"}
+
 
 ## MLS
 
+MLS was a tough one to do. Teams were flexible with stadium capacity or even venue depending on the opponent, for example if Miami & Messi came to town, or the San Jose Earthquakes playing in larger venues if one of the LA teams came up north. But the good news is that in general an MLS tickets is in demand at many clubs. 
+
+Chicago Fire stand out for their generally low capacity, but the club's been a mess for a while now. The other low-capacity numbers are for one-off matches played at a different venue than the usual home field, like NYCFC needing to play across the river at Red Bull Arena in New Jersey, or Montreal having to play indoors in the Olympic Stadium. 
+
 ![](images/plot_attendance_23_mls.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in MLS 2023 season"}
+
 Because MLS as a) too many clubs and b) lots of clubs with similar sized soccer-specific grounds (a good thing!) the stadium capacity by average percent capacity scatterplot is a bit cluttered at the lower end. And that's even with the one-off venue matches deleted. Plus the two significantly larger venues distort the left tail. 
+
 
 ![](images/plot_att_scatter_23_mls1.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in MLS 2023 season"}
 
@@ -674,7 +695,7 @@ So that's why this 2nd scatterplot to get a slightly more honest look at the rel
 
 ## Club attendance figures for other European leagues
 
-What about the other European leagues, those in Belgium, Denmark, the Netherlands, Portugal, Sweden, and Switzerland?
+What about the other European leagues, those in Belgium, Denmark, the Netherlands, Portugal, Scotland, Sweden, and Switzerland? It's a mixed bag, with the Dutch Eredivisie and Scottish Premiership clubs playing to 80%+ full arenas. Meanwhile the Swiss, Belgian, and Portuguese clubs on average are under 60% full. As with the larger leagues, the capacity picture varies by club. 
 <br><br>
 
 
@@ -682,12 +703,16 @@ What about the other European leagues, those in Belgium, Denmark, the Netherland
 
 ## Belgium
 
+Club Brugge may have the highest average attendance, but Antwerp have the highest percent of capacity number, at near 90%. Cercle Brugge are not even at 20% capacity, playing in the same arena as Club Brugge. Though to be honest, something about a number that low makes me wonder if there's a data quality issue. But I can only display what's being reported. 
+
 ![](images/plot_attendance_23_belgium.jpg){fig-alt="bar chart on the left and connected dot plot on the right showing average attendance and stadium capacity by club in Belgian Jupiler League 2022-23 season"}
 
 ![](images/plot_att_scatter_23_belgium.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2022-23 season"}
 
 
 ## Denmark
+
+FC Copenhagen (FCK) are by far the biggest team in Denmark. They play in Parken, the national team stadium, and regularly draw almost 29,000 people per match. Danes do love football, but winters can be cold and damp, and in Jutland handball is also a big winter sport, so demand isn't strong enough to fill arenas. But the vibes are still great, and the quality of play os good. If you want a fun football experience, come to Denmark, and don't just go to FCK. 
 
 ![](images/plot_attendance_23_superligadk.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Danish Superliga 2022-23 season"}   
 
@@ -703,6 +728,8 @@ The plot below shows that teams with something real on the line, either the leag
 
 ## Netherlands
 
+The Dutch also love their football, and Eredivisie tickets are generally in high demand. PAssions run so deep that there's a slight ultras problem with violence, flares, pitch invaders, and objects being thrown onto the pitch. So some matches have been played at reduced capacity or behind closed doors, dperessing the overall capacity percentages a bit. 
+
 ![](images/plot_attendance_23_eredivisie.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Belgian Jupiler League 2022-23 season"}
 
 ![](images/plot_att_scatter_23_eredivisie.jpg){fig-alt="connected dot plot showing average percent capacity and stadium capacity by club in Belgian Jupiler League 2022-23 season"}
@@ -710,11 +737,15 @@ The plot below shows that teams with something real on the line, either the leag
 
 ## Portugal
 
+Like Ligue 1 and the Eredivisie, the Portuguese league features a steady pipeline of players who go on to feature at clubs who play in the Champions League. Does the transient nature of club stars play a part in depressed demand in Portugal? Is it economic? Some clubs are barely filling 30% of their seats. 
+
 ![](images/plot_attendance_23_portugal.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in Portugese Premiera 2022-23 season"}
 
 ![](images/plot_att_scatter_23_portugal.jpg){fig-alt="scatterplot showing average percent capacity and stadium capacity by club in Portugese Premiera 2022-23 season"}
 
 ## Scotland
+
+"Fitba" is big in Scotland, especially at the Old Firm (Celtic & Rangers) and the big Edinburgh clubs (Hibs & Hearts). Those are hard tickets to come by. Clubs lower down the league ladder are having trouble filling seats. That might have to do with the fact that it's not a very competitive league. Either Celtic or Rangers will almost always win the title. 
 
 ![](images/plot_attendance_23_sco.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Scottish Premiership 2022-23 season"}
 
@@ -724,6 +755,8 @@ The plot below shows that teams with something real on the line, either the leag
 
 ## Sweden
 
+The big clubs in Sweden do well in terms of filling seats. AIK Stockholm's capacity number is perhaps hindered by them playing in the national team's stadium. While football is somewhat popular in Sweden, the league does run in the summer, and Swedes take their summer vacation seriously. Does that mean fewer people go during July and August? Something I might check out in a deeper dive post. 
+
 ![](images/plot_attendance_23_swe.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swedish Allsvenskan 2022-23 season"}
 
 
@@ -731,6 +764,8 @@ The plot below shows that teams with something real on the line, either the leag
 
 
 ## Switzerland
+
+I honestly don't know enough about football culture and demand in Switzerland to offer much insight. We do see from the capacity percentage number that FC Winterthur play in an appropriately-sized arena. Almost every match is sold out. Young Boys are the most perennially successful team, so it makes sense there's demand for their matches. But why are Grasshopper and Servette not even at 30% capacity? 
 
 ![](images/plot_attendance_23_sui.jpg){fig-alt="connected dot plot showing average attendance and stadium capacity by club in the Swiss Super League 2022-23 season"}
 
@@ -743,10 +778,12 @@ The plot below shows that teams with something real on the line, either the leag
 
 ## What does it all mean?
 
-Again, MLS has relatively good demand for live matches. League-wide more than 85% of tickets are taken. Whatever one thinks of the quality of play, that too many teams make the playoffs, that perhaps there's too many teams, that there should be promotion-relegation, and other 
+Coming back to the origin point for the post, MLS has relatively good demand for live matches relative to the top European leagues. League-wide more than 85% of tickets are taken. Whatever one thinks of the quality of play, that too many teams make the playoffs, that perhaps there's too many teams in the league, that there should be promotion-relegation, and other issues, enough people think an MLS match is good entertainment value for the money.
 
-It's also worth mentioning that the 2022-23 season was the first since 2018-19 to not be interrupted and/or disrupted by COVID. Stadiums were open to full crowds, and teams and leagues were reporting higher demand than the pre-COVID seasons. People were happy to be able to go out and do things again after partial or full lockdowns.
+In terms of average attendances, it's worth keeping in mind that the 2022-23 season was the first since 2018-19 to not be interrupted and/or disrupted by COVID. Stadiums were open to full crowds, and teams and leagues were reporting higher demand than the pre-COVID seasons. People were happy to be able to go out and do things again after partial or full lockdowns. There was pent up demand for entertainment. I do want to see which leagues sustained their momentum. It's too much work, but it would also be interesting to pull data from 2018-19 to compare to 2022-23 and see what the COVID lockdown effect might have been, if what some teams were reporting held up across leagues.
 
 What else to explore? In addition to tracking the numbers season-to-season, I would like to look a bit more closely at league position and ticket demand; what teams bring crowds in spite of league position, what teams are most affected? I would love to look at the relationship between ticket prices and demand, but price data is not easy to find, especially across all these leagues. Even just looking at 2 or 3 leagues would entail a lot of work. 
 
-I have started another post that will look at MLS a bit more, specifically if there was a "Messi effect" on attendance, and if there's a lull in mid-season attendance. A criticism of the MLS structure is that there are too many teams in general, and too many teams make the playoffs thus reducing the imact of individual matches.
+I have started another post that will look at MLS a bit more, specifically if there was a "Messi effect" on attendance, and if there's a lull in mid-season attendance. A criticism of the MLS structure is that there are too many teams in general, and too many teams make the playoffs thus reducing the impact of individual matches. I'll also look a bit deeper into Spain, and see if Friday & Monday matches hurt attendance. I might also see if the summer vacation in Sweden has an effect on attendance in June through August. 
+
+But that's enough for now. If you've made it this far, I'd love to know what you think. 

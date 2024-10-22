@@ -320,9 +320,9 @@ mls_barplot <-
         axis.text.y = ggtext::element_markdown(size = 11)) +
     annotate(geom = "richtext",
              label = "*Notes:<br>
-					 i) Atlanta, Charlotte, Chicago, New England, Seattle & Vancouver played<br>some matches with expanded capacity
-					 but in their regular stadium.<br> Capacity figure has been normalized to account for the changes.<br>
-					 It is possible expanded capacity figures not reported correctly, so some<br>match percentages may be incorrect.<br>
+					 i) Atlanta, Charlotte, Chicago, New England, Seattle & Vancouver<br>played some matches with expanded capacity
+					 but in their<br>regular stadium. Capacity figure has been normalized to account for<br>the changes.
+					 It is possible expanded capacity figures not reported<br>correctly, so some match percentages may be incorrect.<br>
 					 ii) Teams with +100% capacity might have sold standing-room tickets<br>& thus exceeded reported seated capacity.<br>
 					 iii) For CF Montréal at Stade Olympique, LA Galaxy at Rose Bowl,<br>SJ Earthquakes at Levi's & Stanford, &
 					 NYCFC at Red Bull Area, only<br>1 match played at each venue.*",

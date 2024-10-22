@@ -106,9 +106,9 @@ laliga_attplot +
   <b><span style='color: #FF7F00;'>Average attendance</span></b> and
   <b><span style='color: #1F78B4;'>Stadium capacity</span></b> (right bubble chart), by club, 2022-23 season.<br>
 		In La Liga there is a fair amount of variance in the percentage capacity numbers. The more successful clubs
-    are above 80% capacity, while less successful clubs are mostly between 50% - 70% full.<br>
+    are above 80% capacity, <br>while less successful clubs are mostly between 50% - 70% full.<br>
     Real Madrid & Celta Viga had reduced stadium capacity due to construction.
-    Villareal played ome matches at Estadi Ciutat de València due to construction at La Cerámica.",
+    Villareal played some matches at Estadi Ciutat de València due to construction at La Cerámica.",
                   theme = theme(plot.title =
                                   ggtext::element_textbox_simple(
                                     size = 12, fill = "cornsilk",
@@ -116,8 +116,16 @@ laliga_attplot +
                                     padding = margin(5.5, 5.5, 5.5, 2),
                                     margin = margin(0, 0, 5.5, 0))))
 
-ggsave("plot_attendance_23_laliga.jpg", width = 14, height = 8,
+ggsave("images/plot_attendance_23_laliga.jpg", width = 14, height = 8,
 			 units = "in", dpi = 300)
+
+
+laliga_scatter <- attend_scatter(laliga_att_23_sum)
+laliga_scatter
+
+ggsave("images/plot_att_scatter_23_laliga.jpg", width = 15, height = 8,
+       units = "in", dpi = 300)
+
 
 ## match attendance as pct capacity by match day, time
 glimpse(laliga_att_23)
