@@ -210,20 +210,20 @@ messi_effect %>%
 
 
 # create plotting df. 1st argument is df to run function on, 2nd is for name of df with _sum suffix
-attend_sum(mls_att_23, "mls_att_23")
-glimpse(mls_att_23_sum)
+# attend_sum(mls_att_23, "mls_att_23")
+# glimpse(mls_att_23_sum)
 
-mls_att_23_sum %>%
-	select(stadium_name, stadium_capacity) %>%
-	view()
-
-mls_att_23_sum %>%
-	count(team_name, stadium_name) %>%
-	group_by(team_name) %>%
-	mutate(n_team = n()) %>%
-#	filter(n_team >1) %>%
-	arrange(team_name, stadium_name) %>%
-	view()
+# mls_att_23_sum %>%
+# 	select(stadium_name, stadium_capacity) %>%
+# 	view()
+#
+# mls_att_23_sum %>%
+# 	count(team_name, stadium_name) %>%
+# 	group_by(team_name) %>%
+# 	mutate(n_team = n()) %>%
+# #	filter(n_team >1) %>%
+# 	arrange(team_name, stadium_name) %>%
+# 	view()
 
 ## need to do mls_sum differently due to expandable stadium capacities
 mls_att_23_sum <- mls_att_23 %>%
@@ -390,9 +390,6 @@ ggsave("images/plot_attendance_23_mls.jpg", width = 16, height = 10,
 glimpse(mls_att_23_sum)
 
 mls_att_23_sum %>%
-  filter(!(team_name %in% c("NYCFC-Red Bull Arena", "CF Montréal-Stade Olympique",
-                            "San Jose Earthquakes-Levi's", "San Jose Earthquakes-Stanford",
-                            "LA Galaxy-Rose Bowl"))) %>%
   ggplot(aes(x = stadium_capacity, y = capacity_pct_team)) +
   geom_point() +
   geom_smooth() +

@@ -1,5 +1,5 @@
 ---
-title: "Pithy title here"
+title: "If You Sell It Will They Come"
 description: "Examining football attendance data"
 author: "gregers kjerulf dubrow"
 date: '2024-10-23'
